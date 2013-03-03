@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	xmlns="http://www.gem-soft.com/schema/app" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.gem-soft.com/schema/app" 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified">
+
+	<xsd:annotation>
+		<xsd:documentation><![CDATA[
+			OZ AP's(Agile Application) application definition schema, version 5.2
+			Authors: CD826
+			
+			Defines the elements used in the OZ AP's application definition.
+		]]></xsd:documentation>
+	</xsd:annotation>
+
+	<!-- OzAP顶级标签: <definitions> -->
+	<xsd:element name="definitions">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ应用平台中应用定义的根元素，在该元素内可以定义一个或多个应用模块。
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="description" minOccurs="0"></xsd:element>
+				<xsd:choice minOccurs="0" maxOccurs="unbounded">
+					<xsd:element name="app" type="appType"/>
+				</xsd:choice>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="description">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[ 
+				Contains informative text describing the purpose of the enclosing element.
+				Used primarily for user documentation of XML bean definition documents.
+  			]]></xsd:documentation>
+  		</xsd:annotation>
+		<xsd:complexType mixed="true">
+  			<xsd:choice minOccurs="0" maxOccurs="unbounded" /> 
+  		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:complexType name="appType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用配置平台中应用定义，可以在该元素内声明应用的基本信息。
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="description" minOccurs="0"></xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="id" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					声明该应用的id，该id在整个项目中必须是唯一。在项目中通常我们会使用如下url来使用/打开该应用：/ap/[appId]。
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="name" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					声明该应用的应用名称
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="mapping" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					声明该应用的别名，或者映射名称，使得项目中也可以通过映射名称来使用该应用。
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="status" use="optional" default="release">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					应用的配置状态，默认为release。该属性暂无意义，设计上是用来控制以后各个应用的部署状态。
+				]]></xsd:documentation>
+			</xsd:annotation>			
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="release"/>
+					<xsd:enumeration value="debug"/>
+					<xsd:enumeration value="none"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="defaultViewRef" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					应用的默认视图，如果没有指定，系统默认将解析得到第一个普通视图作为该应用的缺省视图。
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="defaultFormRef" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					应用的默认所使用表单，如果没有指定，系统默认将解析得到第一个普通表单作为该应用的缺省表单。
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+</xsd:schema>  

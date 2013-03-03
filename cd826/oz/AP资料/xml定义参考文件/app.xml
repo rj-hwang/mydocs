@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="oz" version="1">
+	<app id="appId" name="appName" mapping="[appId]" status="[release/debug/none]" defaultViewRef="[viewId]" defaultFormRef="[formId]">
+		<!--
+			属性说明：
+			    1)id: 				[必须] 该应用的Id，通常在权限树中配置如下url来使用该应用：/ap/[appId];
+				2)name:				[必须] 该应用的应用名称；
+				3)mapping:			[可选] 该应用的别名，或映射名称；
+				4)status:			[可选] 该应用的配置状态，默认为release。该属性暂无意义，设计上是用来控制以后各个应用的部署状态;
+				5)defaultViewRef:	[可选] 该应用默认的视图，如果没有指定，系统默认将解析得到第一个普通视图作为该应用的缺省视图；
+				6)defaultFormRef:	[可选] 该应用默认的表单，如果没有指定，系统默认将解析得到第一个普通表单作为该应用的缺省表单。
+			
+			范例：
+				<app id="clgl" name="车辆管理" defaultViewRef="clglView" defaultFormRef="clglForm">
+		-->
+		<documentation>
+			关于该应用的备注说明
+		</documentation>
+	</app>
+</definitions>

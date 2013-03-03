@@ -1,0 +1,397 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 视图定义示例文件 -->
+<!-- 格式定义说明：
+     1、XML元素属性的值如果以[]包含，，说明该字段是可选的字段；
+	 2、XML元素属性的值如果是：A/B/C的格式，说明该属性的可选值为A、B、C，并且第一个值即A为确实值；
+	 3、XML元素属性的值如果是{A.B}的格式，说明该属性的值是指向XML的A元素定义中相应B的属性值；
+ -->
+<definitions targetNamespace="oz" version="1">
+	<!-- 树型控件定义区 -->
+	<trees>
+		<tree id="treeId" name="treeName" root="[所有文件]" checkable="[false/true]"
+			  extendArgs="viewType=${viewType};author=超级管理员" 
+			  handlerClazz=""
+			  tableRef="{DataModel.table.id}"
+			  datasetRef="{DataModel.dataset.id}"
+			  where="[]">
+			<!--
+				属性说明：
+					1)id: 				[必须] 该Tree的Id;
+					2)name:				[必须] 该Tree的名称;
+					3)root:				[可选] 该Tree的根节点的名称，如果不设置则不显示该根节点;
+					4)checkable:		[可选] 该Tree显示时是否可以勾选，可选的值有true/false，默认值为false;
+					5)extendArgs:		[可选] 暂未使用该属性;
+					6)handlerClazz:		[可选] 暂未使用该属性;
+					7)tableRef:			[可选] 该树数据源所使用的Table定义，未定义时自动使用所属应用的第一个master表;
+					8)datasetRef:		[可选] 该树数据源所使用的数据集定义，未定义时自动使用所属应用的第一个master表所生成的数据集；
+					9)where:			[可选] 该树的附加查询条件，格式为：columnId=:columnId, 如：CKBM_ID = :CKBM_ID or CKBM_ID is null.
+				
+				范例：
+					<tree id="tree4Car" name="车辆分类树" root="所有车辆">
+			-->
+				
+			<!-- 树节点声明 -->
+			<node columnId="{DataModel.table.column.id(SUBJECT)}" order="[asc/desc]" showWhenNull="[true/false]" blank="[其它]">
+				<node columnId="{DataModel.table.column.id(SUBJECT)}" order="[asc/desc]" showWhenNull="[true/false]" blank="[其它]"/>
+				<node columnId="{DataModel.table.column.id(SUBJECT)}" order="[asc/desc]" showWhenNull="[true/false]" blank="[其它]"/>
+			</node>
+			<!--
+				属性说明：
+					1)columnId: 		[必须] 该节点的值;
+					2)order:			[可选] 节点值的排序方式，可选的值有asc/desc，默认值为asc;
+					3)blank:			[可选] 当该节点没有值或者为空时显示的字符，如果没有定义则显示为空白。
+					
+				备注：
+					node中可以多层嵌入，形成多级分类树。
+					
+				范例：
+					<node columnId="STATUS" order="asc" blank="未知状态">			
+						<node columnId="BRAND" order="asc" blank="未知品牌"/>
+					</node>
+			-->
+			
+			  <!-- 树节点事件 -->
+			  <event type="nodeclick">
+				<![CDATA[
+					// 这里编写树的节点点击事件，系统默认会生成一个ozOn【TreeId】Node_Clicked()的函数来包含这段代码
+				]]>
+			  </event>
+		</tree>
+	</trees>
+		
+	<!-- 视图定义说明：
+		 1、如果tableRef的值未定义，那么系统默认寻找该view所属application中表类型为master的表；
+		 2、如果datasetRef的值未定义，那么系统默认寻找该view所属application中表类型为master表所生成的默认dataset；
+	-->
+	<views>
+		<view id="sampleView" name="示例视图" type="normal/subView/editableView/dlgView/calendar" 
+			  extendArgs="viewType=${viewType};author=超级管理员" 
+			  handlerClazz=""
+			  tableRef="{DataModel.table.id}"
+			  datasetRef="{DataModel.dataset.id}"
+			  defaultFormRef="[{form.id}]">
+			  
+			<!-- 工具条(Toolbar)定义区 -->
+			<toolbar defaultToolbar="view">
+				<seperator/>
+				<button id="btnBack" text="返回" icon="oz-icon-0000">
+					<event type="click">
+						<![CDATA[		
+							在这里编写按钮点击事件的JavaScript脚本代码，系统默认会生成一个ozOnBtn【buttonId】_【event.type】()的函数来包含这段代码。
+							系统会默认提供onBtnBack_Clicked()这个函数来调用，可以不写。
+						]]>
+					</event>
+				</button>	
+				<seperator/>
+				<dropdownButton id="btnViewType" text="视图类型" value="${viewType}">
+					<option value="AWJLX" text="按文件类型"/>
+					<option value="AWJRQ" text="按文件日期"/>
+					<event type="change">
+						<![CDATA[						
+							在这里编写按钮点击事件的JavaScript脚本代码，系统默认会生成一个ozOnBtn【buttonId】_【event.type】()的函数来包含这段代码。
+						]]>
+					</event>
+				</dropdownButton>
+				<seperator/>
+				<button id="btnNew" text="新建" icon="oz-icon-0000">
+					<event type="click">
+						<![CDATA[						
+							在这里编写按钮点击事件的JavaScript脚本代码，系统默认会生成一个ozOnBtn【buttonId】_【event.type】()的函数来包含这段代码。
+							系统会默认提供onBtnNew_Clicked()这个函数来调用，可以不写。
+						]]>
+					</event>
+				</button>	
+				<seperator/>
+				<button id="btnDelete" text="删除" icon="oz-icon-0000">
+					<event type="click">
+						<![CDATA[						
+							在这里编写按钮点击事件的JavaScript脚本代码，系统默认会生成一个ozOnBtn【buttonId】_【event.type】()的函数来包含这段代码。
+							系统会默认提供onBtnDelete_Clicked()这个函数来调用，可以不写。
+						]]>
+					</event>
+				</button>			
+				<seperator/>
+				<button id="btnRefresh" text="刷新" icon="oz-icon-0000">
+					<event type="click">
+						<![CDATA[						
+							在这里编写按钮点击事件的JavaScript脚本代码，系统默认会生成一个ozOnBtn【buttonId】_【event.type】()的函数来包含这段代码。
+							系统会默认提供onBtnRefresh_Clicked()这个函数来调用，可以不写。
+						]]>
+					</event>
+				</button>
+			</toolbar>
+			
+			<!-- 查询定义区 -->
+			<search type="[none/normal/advance]">
+				<!-- 可多个 -->
+				<field fileId="{DataModel.table.column.id(SUBJECT)}"/>
+			</search>
+			
+			<!-- 视图导航树定义区 -->
+			<naviTree treeRef="{tree.id}">
+				<tree id="treeId" name="示例树" root="[所有文件]" checkable="[false/true]"
+						extendArgs="viewType=${viewType};author=超级管理员" 
+						handlerClazz=""
+						datasetRef="{DataModel.dataset.id}">
+						<!-- 树节点声明 -->
+						<node columnId="{DataModel.table.column.id(SUBJECT)}" order="[asc/desc]" blank="[其它]">
+							<node columnId="{DataModel.table.column.id(SUBJECT)}" order="[asc/desc]" blank="[其它]"/>
+							<node columnId="{DataModel.table.column.id(SUBJECT)}" order="[asc/desc]" blank="[其它]"/>
+						</node>
+				</tree>
+		
+				<!-- 树节点映射区域 -->
+				<nodemap columnId="[{tree.node.fieldId}]" level="[1]" mapColumnId="{DataModel.table.column.id(SUBJECT)}">
+				<nodemap columnId="[{tree.node.fieldId}]" level="[2]" mapColumnId="{DataModel.table.column.id(SUBJECT)}">
+							
+				<!-- 可以复写树的事件 -->
+				<event type="nodeclick">
+					<![CDATA[
+						// 这里编写树的节点点击事件，系统会将此段代码置入树的单击事件中，如果没有定义系统则默认生成视图数据重新加载的代码
+						// 这里会有两个参数传入到该段代码
+						// 第一个参数e，即事件处理本身；
+						// 第二个参数node，即所点击的节点。
+						// 当需要重新加载表格的数据时可以使用下面这个语句：
+						//     OZ.View.reloadGrid({classification:node.id, dbftsParams:""});
+						// 其中classification这个参数是默认参数，如果需要修改这个参数可以在请求的url中加入classParam这个参数来指示参数的名称，如:[pageUrl]&classParam=myClassification，
+						// 此时可以将请求语句修改为下面：
+						//     OZ.View.reloadGrid({myClassification:node.id, dbftsParams:""});
+					]]>
+				</event>
+			</naviTree>
+			
+			<!-- 表格(Grid)定义区 -->
+			<grid id="{gridId}" selectMode="[checkbox/none/radio]" pagination="[true/false]" export="[excel]" defaultSortField="[{column.id}]" defaultSortDir="[asc/desc]">
+				<!-- 表格列(Column)定义区 -->
+				<!-- ID为表的主键，在该区域中只能够定义一次。一般定义格式如下：-->
+				<column field="ID"/>
+				<!-- 下面的列可以多个 -->
+				<!-- Column格式定义说明：
+					1、renderFn系统定义了以下可选函数；
+						A.apDefaultFormatter:渲染成可以直接打开相应的表单;
+				-->
+				<column field="{DataModel.table.column.id(SUBJECT)}" title="[{DataModel.table.column.name(文件标题)}]" width="[320]" align="[left/center/right]" sortable="[true/false]" renderFn="[apDefaultFormatter]">
+					<columnRender>
+						<![CDATA[
+							// 列渲染的JavaScript脚本代码，系统默认会生成一个ozRender4{column.field}(value, rowData, rowIndex)的函数来包含这段代码
+							// 该函数有三个参数，第一个参数：value即该列的初始值，rowData即该列所在行的数据，可以通过rowData.{column.id}来获取相应的值；
+							// 第三个参数rowIndex是指该行的顺序号。
+							// 注意：这三个参数名称是不能修改的。
+							// 样例如下：						
+							if(value == 10)				// 这里value表示车辆状态的值
+								return "使用中";
+							if(value == 20)
+								return "维修中";
+							return "未知状态(" + value + ")";
+						]]>	
+					</columnRender>
+				</column>
+				
+				<!-- 表格事件定义区，可选定义 -->
+				<event type="[rowDblClick]" handleFn="[apDefaultRowDblClick/apNoopRowDblClick]">
+					<![CDATA[
+						// 表格双击事件的JavaScript脚本代码，系统默认会生成一个on{event.type}(rowIndex, rowData, data)的函数来包含这段代码
+						// 该函数有三个参数，第一个参数rowIndex是指该行的顺序号，rowData即该列所在行的数据，可以通过rowData.{column.id}来获取相应的值；
+						// 第三个参数data是指表示该行数据的类型，用于多窗口之间的数据传递。
+						// 这里系统默认提供下面两个默认函数：
+						//     1)apDefaultRowDblClick:该函数默认打开相应的表单，这个也是默认操作，当什么也不声明的时候也是使用该函数；
+						//     2)apNoopRowDblClick:该函数禁止了双击操作。
+					]]>
+				</event>
+			</grid>
+					
+			<!-- 视图事件定义区 -->
+			<events>
+				<event type="load" handleFn="">
+					<![CDATA[
+						视图事件响应的JavaScript脚本代码，系统默认会生成一个ozOnView【event.type】()的函数来包含这段代码
+					]]>
+				</event>
+			</events>
+			
+			<!-- 样式资源定义区 -->
+			<csss>
+				<css src="">
+					<![CDATA[
+						CSS内容
+					]]>
+				</css>
+			</csss>	
+			
+			<!-- JavaScript资源定义区 -->
+			<javascripts>
+				<javascript src="">
+					<![CDATA[
+						JavaScript脚本
+					]]>
+				</javascript>
+			</javascripts>	
+			
+			<!-- 可执行脚本定义区，该定义主要应用于后台相关处理 -->
+			<scripts>
+				<script id="SID-(36位)" language="JavaScript/PHP/Ruby/Python">
+					<![CDATA[
+						脚本内容
+					]]>
+				</script>
+			</scripts>	
+			
+			<!-- 对视图的备注说明 -->
+			<documentation>
+				关于该视图的备注说明
+			</documentation>
+		</view>
+	</views>
+	
+	<!-- 表单定义说明：
+		 1、如果tableRef的值未定义，那么系统默认寻找该view所属application中表类型为master的表；
+		 2、如果datasetRef的值未定义，那么系统默认寻找该view所属application中表类型为master表所生成的默认dataset；
+	-->
+	<forms>
+		<form formType="[form/processForm/dlgForm/formEngine]" controllerType="[self/documentCfg]" id="sampleForm" name="示例表单" handlerClazz="[]"
+			  tableRef="{DataModel.table.id}"
+			  ukeySupported="[false/true]">
+			  
+			<!-- 工具条(Toolbar)定义区 -->
+			<toolbar defaultToolbar="editForm">
+				<seperator/>
+				<button id="btnBack" text="返回" icon="oz-icon-0000">
+					<event type="click" handleFn="fn">
+						<![CDATA[		
+							// 在这里编写按钮点击事件的JavaScript脚本代码，系统默认会生成一个ozOnBtn【buttonId】_【event.type】()的函数来包含这段代码。
+							// 系统会默认提供onBtnBack_Clicked()这个函数来调用，可以不写。
+						]]>
+					</event>
+				</button>
+				<seperator/>
+				<button id="btnSave" text="保存" icon="oz-icon-0000">
+					<event type="click">
+						<![CDATA[						
+							// 在这里编写按钮点击事件的JavaScript脚本代码，系统默认会生成一个ozOnBtn【buttonId】_【event.type】()的函数来包含这段代码。
+							// 系统会默认提供onBtnSave_Clicked()这个函数来调用，可以不写。
+						]]>
+					</event>
+				</button>
+			</toolbar>
+			
+			<body>
+				<!-- 表单中显示字段(Fields)定义区 -->
+				<table style="[width:100%]">
+					<tr height="[80px]">
+						<td colspan="[1]">
+							<input id="{DataModel.table.column.id(SUBJECT)}" name="[{DataModel.table.column.name(标题)}]" 
+								   style="[color:red;]" className="[oz-form-field]"
+								   width="[120px]" height="[80px]">
+								<validator triggerBy="[focusout/beforesave]">
+									<![CDATA[
+										<!-- 验证的方法，JavaScript脚本，如果验证成功则返回true，否则返回提示的信息 -->
+										return "这是一个提示哦！";
+									]]>
+								</validator>
+								
+								<displayMode triggerBy="[onload/observe]" default="[hide(0)|readonly(1)|edit(2)|print(4)]" observeFields="所要监控字段的ID，多个之间使用逗号分开，如：QTFY_ZHUSUFEI,QTFY_JIAOTONGFEI">
+									<![CDATA[
+										<!-- 获取该字段的显示类型，JavaScript脚本，返回相应的状态 -->
+										<!-- 返回的值最好使用：DisplayMode.PRINT/DisplayMode.EDIT/DisplayMode.READONLY/DisplayMode.HIDE -->
+										return 2 + 4;
+									]]>
+								</displayMode>
+							</input>
+							
+							<!-- 计算字段，可用属性与input类似，增加了observeFields -->
+							<computedField id="{DataModel.table.column.id(HeJi)}" triggerBy="[observe/onload]" observeFields="所要监控字段的ID，多个之间使用逗号分开，如：QTFY_ZHUSUFEI,QTFY_JIAOTONGFEI" calcOrderNo="[99]" expression="[计算表达式]">
+								<value>
+									<![CDATA[
+										<!-- 计算的方法，JavaScript脚本，返回计算得到的值 -->
+										return _$SumFloat(["QTFY_ZHUSUFEI", "QTFY_JIAOTONGFEI", "QTFY_JIAOTONGBUZHU", "QTFY_PEIXUNFEI", "QTFY_DINGPIAOFEI", "QTFY_DABAOFEI", "QTFY_TONGXUNFEI", "QTFY_HUIYIFEI"], 2);
+									]]>
+								</value>
+							</computedField>
+							
+							<!-- 计算文本 -->
+							<computedText id="textId" triggerBy="[observe/onload]" observeFields="所要监控字段的ID，多个之间使用逗号分开，如：QTFY_ZHUSUFEI,QTFY_JIAOTONGFEI">
+								<value>
+									<![CDATA[
+										<!-- 计算的方法，JavaScript脚本，返回计算得到的值 -->
+										return _$SumFloat(["QTFY_ZHUSUFEI", "QTFY_JIAOTONGFEI", "QTFY_JIAOTONGBUZHU", "QTFY_PEIXUNFEI", "QTFY_DINGPIAOFEI", "QTFY_DABAOFEI", "QTFY_TONGXUNFEI", "QTFY_HUIYIFEI"], 2);
+									]]>
+								</value>
+							</computedText>
+							
+							<button id="[btnButtonId]" label="选择..." width="[64px]" style="[]" onclickHandler="">
+								<event type="click">
+									<![CDATA[		
+										// 在这里编写按钮点击事件的JavaScript脚本代码，系统默认会生成一个onBtn[button.Id]_【event.type】()的函数来包含这段代码。
+									]]>
+								</event>
+								
+								<displayMode triggerBy="[onload/observe]" default="[hide(0)|display(1)]" observeFields="所要监控字段的ID，多个之间使用逗号分开，如：QTFY_ZHUSUFEI,QTFY_JIAOTONGFEI">
+									<![CDATA[
+										<!-- 获取该按钮的显示类型，JavaScript脚本，返回相应的状态 -->
+										return 1;
+									]]>
+								</displayMode>
+							</button>
+							
+							<!-- 联动下拉框的编写格式 -->
+							<linkselect id="selectId" width="120px" dataDict="数据字典中的分类"></linkselect>
+							<linkselect id="childSelectId" width="120px" parentRef="selectId"></linkselect>
+						</td>
+					</tr>
+				</table>
+				
+				<!-- 表单中隐藏字段(HiddenFields)定义区 -->
+				<hiddenFields>
+					<field fileId="{DataModel.table.column.id(SUBJECT)}"/>
+				</hiddenFields>
+				
+				<html>
+					<![CDATA[						
+						// 在这里编写该表单相应的Html代码
+					]]>
+				</html>
+			</body>
+								
+			<!-- 视图事件定义区 -->
+			<events>
+				<event type="load" handleFn="">
+					<![CDATA[
+						// 表单事件响应的JavaScript脚本代码，系统默认会生成一个ozOnForm【event.type】()的函数来包含这段代码
+					]]>
+				</event>
+			</events>
+			
+			<!-- 样式资源定义区 -->
+			<csss>
+				<css src="">
+					<![CDATA[
+						// CSS内容
+					]]>
+				</css>
+			</csss>	
+			
+			<!-- JavaScript资源定义区 -->
+			<javascripts>
+				<javascript src="">
+					<![CDATA[
+						// JavaScript脚本
+					]]>
+				</javascript>
+			</javascripts>	
+			
+			<!-- 可执行脚本定义区，该定义主要应用于后台相关处理 -->
+			<scripts>
+				<script id="SID-(36位)" language="JavaScript/PHP/Ruby/Python">
+					<![CDATA[
+						// 脚本内容
+					]]>
+				</script>
+			</scripts>	
+			
+			<!-- 对视图的备注说明 -->
+			<documentation>
+				关于该表单的备注说明
+			</documentation>
+		</form>
+	</forms>
+</definitions>

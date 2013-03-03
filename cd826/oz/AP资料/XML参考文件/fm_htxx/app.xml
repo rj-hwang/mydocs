@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 应用模块定义 -->
+<definitions targetNamespace="oz" version="1">
+	<app id="fm_htxx" name="合同信息管理" mapping="fm_htxx" status="release">
+		<documentation>
+			合同信息管理
+		</documentation>
+	</app>
+</definitions>

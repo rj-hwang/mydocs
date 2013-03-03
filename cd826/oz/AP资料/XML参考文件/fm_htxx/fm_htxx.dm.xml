@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions version="1">
+	<dataModel>
+		<table id="OZ_UD_FM_HTXX" name="合同信息管理" docType="FM_HTXX" type="master">
+			<columns>
+				<column id="ID" name="主键" isPrimaryKey="true"/>
+				<column id="LRR" name="录入人" defaultValue="#{curUserInfo.name}"/>
+				<column id="LRR_ID" name="录入人ID" defaultValue="#{curUserInfo.id}"/>
+				<column id="LRRQ" name="录入日期" dataType="datetime" defaultValue="#{sysdate}"/>
+				<column id="HTMC" name="合同名称" searchable="true" notNull="true" titleColumn="true"/>
+				<column id="HTBH" name="合同编号"/>
+				<column id="HTBH_SCB" name="合同编号_市场部"/>
+				<column id="QDRQ" name="签订日期" dataType="date"/>
+				<column id="HTFMC" name="合同方名称"/>
+				<column id="WFJBR" name="我方经办人" defaultValue="#{curUserInfo.name}"/>
+				<column id="WFJBR_ID" name="我方经办人ID" defaultValue="#{curUserInfo.id}"/>
+				<column id="WFJBR_BM" name="经办人所属部门" defaultValue="#{curUserInfo.ouInfo.name}"/>
+				<column id="WFJBR_BMID" name="经办人所属部门ID" defaultValue="#{curUserInfo.ouInfo.id}"/>
+				<column id="SSDW" name="合同所属单位"/>
+				<column id="HTJE" name="合同金额" dataType="double"/>
+				<column id="HTJEBZ" name="币种"/>
+				<column id="HTJEBZ_MC" name="币种名称"/>
+				<column id="LX_FL" name="合同类型(法律)"/>
+				<column id="LX_FL_MC" name="合同类型(法律)名称"/>
+				<column id="LX_SFK" name="合同类型(收付款)"/>
+				<column id="LX_SFK_MC" name="合同类型(收付款)名称"/>
+				<column id="LX_YHS" name="合同类型(印花税)"/>
+				<column id="HTQX" name="合同期限" dataType="date"/>
+				<column id="XTYHS" name="需贴印花税" defaultValue="N"/>
+				<column id="YTYHS" name="已贴印花税" defaultValue="N"/>
+				<column id="YHSL" name="印花税率" dataType="double"/>
+				<column id="YHSJE" name="印花税金额" dataType="double"/>
+				<column id="HTZT" name="合同状态"/>
+				<column id="HTZT_MC" name="合同状态名称"/>
+				<column id="YSGSLX_1" name="预算归属类型_1"/>
+				<column id="YSGSLX_2" name="预算归属类型_2"/>
+				<column id="YSGSLX_3" name="预算归属类型_3"/>
+				<column id="YSGS_ID" name="预算ID"/>
+				<column id="HTBZ" name="合同备注" dataType="text"/>
+				<column id="YZFCS" name="已付款次数" dataType="int" defaultValue="0"/>
+				<column id="LJSFKJE" name="累计收付款金额" dataType="double" defaultValue="0.0"/>
+				<column id="XCTXRQ" name="下次提醒日期" dataType="date"/>
+				<column id="UNIT_ID" name="所属单位ID" notNull="true" defaultValue="#{curUserInfo.unitId}"/>
+			</columns>
+			<documentation>
+				合同信息管理
+			</documentation>
+		</table>
+		
+		<table id="OZ_UD_FM_HTSJFK" name="合同实际付款信息" docType="FM_HTXX_HTSJFK" type="child">
+			<columns>
+				<column id="ID" name="主键" isPrimaryKey="true"/>
+				<column id="HT_ID" name="所属合同" dataType="long" defaultValue="#{master.ID}"/>
+				<column id="FKXH" name="次数" dataType="int"/>
+				<column id="SQD_DOCTYPE" name="所属审批单"/>
+				<column id="SQD_ID" name=""/>
+				<column id="SQD_BH" name="申请单编号"/>
+				<column id="FKRQ" name="付款日期" dataType="date"/>
+				<column id="FKJE" name="付款金额" dataType="double"/>
+				<column id="SPWC" name="是否预付款"/>
+				<column id="FKWC" name="发票到账情况"/>
+			</columns>
+			
+			<references>
+				<reference constraintName="FK_OZ_UD_FM_FK_REF_HT" foreignColumnRef="HT_ID" referenceTableRef="OZ_UD_FM_HTXX" referenceColumnRef="ID"/>
+			</references>
+
+			<documentation>
+				合同实际付款信息
+			</documentation>
+		</table>
+		
+		<table id="OZ_UD_FM_HTCWTK" name="合同财务条款" docType="FM_HTXX_HTCWTK" type="child">
+			<columns>
+				<column id="ID" name="主键" isPrimaryKey="true"/>
+				<column id="HT_ID" name="所属合同" dataType="long" defaultValue="#{master.ID}"/>
+				<column id="XH" name="序号" dataType="int"/>
+				<column id="TK" name="条款"/>
+				<column id="FJ" name="附件支持"/>
+			</columns>
+			
+			<references>
+				<reference constraintName="FK_OZ_UD_FM_TK_REF_HT" foreignColumnRef="HT_ID" referenceTableRef="OZ_UD_FM_HTXX" referenceColumnRef="ID"/>
+			</references>
+
+			<documentation>
+				合同财务条款信息
+			</documentation>
+		</table>
+		
+		<table id="OZ_UD_FM_HTSJSK" name="合同实际收款信息" docType="FM_HTXX_HTSJSK" type="child">
+			<columns>
+				<column id="ID" name="主键" isPrimaryKey="true"/>
+				<column id="HT_ID" name="所属合同" dataType="long" defaultValue="#{master.ID}"/>
+				<column id="SKCS" name="次数" dataType="int" />
+				<column id="LRR" name="录入人" defaultValue="#{curUserInfo.name}"/>
+				<column id="LRR_ID" name="录入人ID" defaultValue="#{curUserInfo.id}"/>
+				<column id="LRRQ" name="录入日期" dataType="datetime" defaultValue="#{sysdate}"/>
+				<column id="SKRQ" name="收款日期" dataType="date" />
+				<column id="SKJE" name="收款金额" dataType="double"/>
+				<column id="YSQFP" name="是否已申请开发票" defaultValue="N"/>
+				<column id="YKFP" name="是否已开发票" defaultValue="N"/>
+				<column id="SKWC" name="是否完成收款" defaultValue="N"/>
+				<column id="SKBZ" name="备注信息" dataType="text"/>
+			</columns>
+			
+			<references>
+				<reference constraintName="FK_OZ_UD_FM_SK_REF_HT" foreignColumnRef="HT_ID" referenceTableRef="OZ_UD_FM_HTXX" referenceColumnRef="ID"/>
+			</references>
+
+			<documentation>
+				合同实际付款信息
+			</documentation>
+		</table>
+		
+		<table id="OZ_UD_FM_HTYSK" name="合同预收款信息" docType="OZ_UD_FM_HTYSK" type="child">
+			<columns>
+				<column id="ID" name="主键" isPrimaryKey="true"/>
+				<column id="HT_ID" name="所属合同" isForeignKey="true" defaultValue="#{master.ID}"/>
+				<column id="SKCS" name="次数" />
+				<column id="JSRQ" name="结算日期" dataType="date" />
+				<column id="JSJE" name="结算金额" dataType="double"/>
+				<column id="YSQFP" name="是否已申请开发票" defaultValue="N"/>
+				<column id="YKFP" name="是否已开发票" defaultValue="N"/>
+				<column id="SKWC" name="是否完成收款" defaultValue="N"/>
+				<column id="SKBZ" name="备注信息" dataType="text"/>
+				<column id="LRR" name="录入人" defaultValue="#{curUserInfo.name}"/>
+				<column id="LRR_ID" name="录入人ID" defaultValue="#{curUserInfo.id}"/>
+				<column id="LRRQ" name="录入日期" dataType="datetime" defaultValue="#{sysdate}"/>
+			</columns>
+			
+			<references>
+				<reference constraintName="FK_OZ_UD_FM_YSK_REF_HT" foreignColumnRef="HT_ID" referenceTableRef="OZ_UD_FM_HTXX" referenceColumnRef="ID"/>
+			</references>
+
+			<documentation>
+				合同预收款信息
+			</documentation>
+		</table>
+	</dataModel>
+	
+	<datasets>
+		<dataset id="ds4FmInsertHtfkjl" name="插入合同付款记录信息" tableRef="OZ_UD_FM_HTSJFK">
+			<args>
+				<arg id="ID"/>
+				<arg id="HT_ID" paramId="HT_ID"/>
+				<arg id="FKXH" paramId="FKXH"/>
+				<arg id="SQD_DOCTYPE" defaultValue="FM_HTFKSPD"/>
+				<arg id="SQD_ID" paramId="ID"/>
+				<arg id="SQD_BH" paramId="SQDH"/>
+				<arg id="FKRQ" paramId="SJFKRQ"/>
+				<arg id="FKJE" paramId="YFJE"/>
+				<arg id="SPWC" paramId="ISYFK"/>
+				<arg id="FKWC" paramId="FPDZQK"/>
+			</args>
+			<sql>
+				<![CDATA[
+					INSERT INTO OZ_UD_FM_HTSJFK(ID, HT_ID, FKXH, SQD_DOCTYPE, SQD_ID, SQD_BH, FKRQ, FKJE, SPWC, FKWC) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+				]]>
+			</sql>
+		</dataset>
+		<dataset id="ds4FmUpdateFpdzQk" name="更新发票到账情况" tableRef="OZ_UD_FM_HTSJFK">
+			<args>
+				<arg id="ID" dataType="long"/>
+			</args>
+			<sql>
+				<![CDATA[
+					UPDATE OZ_UD_FM_HTSJFK SET FKWC='Y' WHERE ID=?
+				]]>
+			</sql>
+		</dataset>
+		<dataset id="ds4FmSelectFpdzQk" name="查询发票到账情况" tableRef="OZ_UD_FM_HTSJFK">
+			<args>
+				<arg id="ID" dataType="long"/>
+			</args>
+			<sql>
+				<![CDATA[
+					SELECT FKWC FROM  OZ_UD_FM_HTSJFK  WHERE ID=?
+				]]>
+			</sql>
+			<scalars>				
+				<scalar columnAlias="FKWC"/>
+			</scalars>
+		</dataset>
+		<dataset id="ds4FmUpdateHtxx" name="更新合同信息" tableRef="OZ_UD_FM_HTXX">
+			<args>
+				<arg id="YZFCS" paramId="FKXH"/>
+				<arg id="LJSFKJE" paramId="YFJE"/>
+				<arg id="ID" paramId="HT_ID"/>
+			</args>
+			<sql>
+				<![CDATA[
+					UPDATE OZ_UD_FM_HTXX SET YZFCS=?, LJSFKJE=(case when LJSFKJE is null then 0 else LJSFKJE end)+? WHERE ID=?
+				]]>
+			</sql>
+		</dataset>
+		
+		<dataset id="ds4FmSelectHtcwtkXh" name="选择合同财务条款序号" tableRef="OZ_UD_FM_HTCWTK">
+			<args>
+				<arg id="HT_ID" />
+			</args>
+			<sql>
+				<![CDATA[
+					select max(XH) as TK_XH from OZ_UD_FM_HTCWTK where HT_ID=?
+				]]>
+			</sql>
+			<scalars>				
+				<scalar columnAlias="TK_XH" dataType="int"/>
+			</scalars>
+		</dataset>
+		
+		<dataset id="ds4FmSelectHtsjskcs" name="选择合同实际收款次数" tableRef="OZ_UD_FM_HTSJSK">
+			<args>
+				<arg id="HT_ID" />
+			</args>
+			<sql>
+				<![CDATA[
+					select max(SKCS) as SK_CS from OZ_UD_FM_HTSJSK where HT_ID=?
+				]]>
+			</sql>
+			<scalars>				
+				<scalar columnAlias="SK_CS" dataType="int"/>
+			</scalars>
+		</dataset>
+		
+		<dataset id="ds4FmSelectHtsjfkcs" name="选择合同实际付款次数" tableRef="OZ_UD_FM_HTSJFK">
+			<args>
+				<arg id="HT_ID" />
+			</args>
+			<sql>
+				<![CDATA[
+					select max(FKXH) as FKXH from OZ_UD_FM_HTSJFK where HT_ID=?
+				]]>
+			</sql>
+			<scalars>				
+				<scalar columnAlias="FKXH" dataType="int"/>
+			</scalars>
+		</dataset>
+		
+		<dataset id="ds4FmSelectHtLxFl" name="查看合同法律类型" tableRef="OZ_UD_FM_HTXX">
+			<args>
+				<arg id="ID" />
+			</args>
+			<sql>
+				<![CDATA[
+					SELECT LX_FL from OZ_UD_FM_HTXX WHERE ID=?
+				]]>
+			</sql>
+			<scalars>				
+				<scalar columnAlias="LX_FL"/>
+			</scalars>
+		</dataset>
+		
+		<dataset id="ds4FmGetHtfmc" name="获取合同方名称" tableRef="OZ_UD_FM_HTXX">
+			<args>
+				<arg id="WFJBR_ID"/>
+			</args>
+			<sql>
+				<![CDATA[
+					select htfmc from (select max(lrrq),htfmc from OZ_UD_FM_HTXX where WFJBR_ID=? group by htfmc  order by max(lrrq) desc)
+				]]>
+			</sql>
+			<scalars>
+				<scalar columnAlias="HTFMC"/>
+			</scalars>
+		</dataset>
+		
+		<dataset id="ds4FmPdHtbh" name="判断合同编号是否重复" tableRef="OZ_UD_FM_HTXX">
+			<args>
+				<arg id="HTBH" />
+				<arg id="ID"/>
+			</args>
+			<sql>
+				<![CDATA[
+					select htbh,count(*) from oz_ud_fm_htxx  where htbh=? and ID !=? group by htbh
+				]]>
+			</sql>
+			<scalars>
+			</scalars>
+		</dataset>
+		
+		<dataset id="ds4FmGetHtYfkje" name="获取合同预付款金额" tableRef="OZ_UD_FM_HTSJFK">
+			<args>
+				<arg id="HT_ID" />
+			</args>
+			<sql>
+				<![CDATA[
+					select SUM(FKJE) as ZQYFKJE from OZ_UD_FM_HTSJFK   where HT_ID=? AND SPWC='Y' AND FKWC='N'
+				]]>
+			</sql>
+			<scalars>
+				<scalar columnAlias="ZQYFKJE" dataType="double"/>
+			</scalars>
+		</dataset>
+	</datasets>	
+</definitions>

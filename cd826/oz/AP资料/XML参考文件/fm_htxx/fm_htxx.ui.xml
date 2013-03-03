@@ -1,0 +1,1864 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions targetNamespace="oz" version="1">
+	<views>
+		<view id="view4FmHtxx" name="合同信息" type="normal">
+			<toolbar>
+				<seperator/>
+				<button id="btnNew" text="新建"/>
+				<seperator/>
+				<button id="btnDelete" text="删除"/>
+				<seperator/>
+				<button id="btnRefresh" text="刷新"/>
+			</toolbar>
+			
+			<search type="advance">
+				<field fileId="QDRQ"/>
+				<field fileId="HTBH"/>
+				<field fileId="HTMC"/>
+				<field fileId="HTFMC"/>
+				<field fileId="WFJBR"/>
+				<field fileId="HTJE"/>
+				<field fileId="LX_FL"/>
+				<field fileId="LX_SFK"/>
+				<field fileId="HTZT"/>
+			</search>
+			
+			<grid id="ozGrid" selectMode="checkbox"
+				  pagination="true"
+				  export="excel"
+				  defaultSortField="QDRQ" defaultSortDir="desc">
+				<column field="ID"/>
+				<column field="QDRQ" width="80"/>
+				<column field="HTBH" width="120" renderFn="apDefaultFormatter"/>
+				<column field="HTMC" width="160" renderFn="apDefaultFormatter"/>
+				<column field="HTFMC" width="120"/>
+				<column field="WFJBR" width="80"/>
+				<column field="HTJE" width="80" align="right"/>
+				<column field="LJSFKJE" width="100" align="right" renderFn="apCurrencyFormatter"/>
+				<column field="LX_FL_MC" width="80"/>
+				<column field="LX_SFK_MC" width="80"/>
+				<column field="XCTXRQ" width="80"/>
+				<column field="YHSL" width="80"/>
+				<column field="YHSJE" width="80" align="right" renderFn="apCurrencyFormatter"/>
+				<column field="HTZT_MC" width="80"/>
+			</grid>
+			
+			<javascripts>
+				<javascript src="/app/js/qxkz.js"/>
+				<javascript>
+					<![CDATA[
+						function getCanUsedTBBtns(){
+							var btnIds = new Array();
+							btnIds.push("btnRefresh");
+							if(isHTAdmin()){
+								btnIds.push("btnNew");
+								btnIds.push("btnDelete");
+							}
+							return btnIds;
+						}						
+					]]>
+				</javascript>
+			</javascripts>
+			<documentation>
+				合同信息管理视图
+			</documentation>
+		</view>
+		
+		<view id="selectView4FmHtxx" name="选择合同" type="dlgView" extendArgs="viewType=${viewType};LX_SFK=FK;HTZT=YQ" where="YSGS_ID IS NOT NULL">	
+			<toolbar/>
+			<search type="normal">
+			</search>
+			
+			<grid id="ozGrid" selectMode="radio"
+				  pagination="false"
+				  defaultSortField="QDRQ" defaultSortDir="desc">
+				<column field="ID"/>
+				<column field="HTBH" width="140"/>
+				<column field="HTMC" width="160"/>
+				<column field="HTFMC" width="120"/>
+				<column field="HTJE" width="150" align="right" renderFn="apCurrencyFormatter"/>
+				<column field="HTZT_MC"  title="合同状态" width="60" align="center"/>
+				<column field="QDRQ" width="80"/>
+				<event type="rowDblClick">
+					<![CDATA[
+						// 禁用该事件
+					]]>
+				</event>
+			</grid>
+			<documentation>
+				选择合同信息视图
+			</documentation>
+		</view>
+		
+		<view id="view4FmHtsjfk" name="合同实际付款信息" type="subView" tableRef="OZ_UD_FM_HTSJFK" defaultFormRef="form4FmHtsjfk">
+			<toolbar>
+				<seperator/>
+				<button id="btnNew" text="新建"/>
+				<seperator/>
+				<button id="btnDelete" text="删除"/>
+				<seperator/>
+				<button id="btnRefresh" text="刷新"/>
+				<seperator/>
+				<button id="btnFpdz" text="发票到账" icon="oz-icon-1324">
+					<event type="click" handleFn="onBtnFpdz_Clicked()"/>
+				</button>
+			</toolbar>			
+			<search type="none"/>
+			<grid id="ozGrid" selectMode="checkbox" pagination="false" defaultSortField="FKXH" defaultSortDir="asc">
+				<column field="ID"/>
+				<column field="FKXH" width="60"/>
+				<column field="SQD_BH" width="200" >
+					<columnRender>
+							<![CDATA[
+								// value, rowData, rowIndex
+								//alert(docType);
+								var url = "";
+								var appId = "fm_htfksp";
+								var formId = "form4FmHtfkspd";
+								var idCoumnId = "ID";
+								var sqdId = rowData.SQD_ID;
+								
+								if(sqdId != null && sqdId != null && sqdId.length>0){
+									url = "<a href='javascript:_$OpenForm(\"" + appId + "\",\"" + formId + "\",\"" + idCoumnId + "\", \"" + rowData.SQD_ID + "\", \"" + "合同付款审批单" + "\")' style='color:#0066CC;text-decoration: underline;'>" + value + "</a>";
+								}else{
+									url = "<a href='javascript:apDefaultOpenRow(\"" + rowIndex + "\",\"" + rowData + "\")' style='color:#0066CC;text-decoration: underline;'>" + "手工录入" + "</a>";
+								}
+								
+								return url;
+							]]>	
+						</columnRender>
+				</column>
+				<column field="FKRQ" width="100"/>
+				<column field="FKJE" align="right" width="120" />
+				<column field="SPWC" width="120" align="center">
+					<columnRender>
+							<![CDATA[
+								if(value == "Y"){
+									return "是";
+								}
+								return "否"
+							]]>	
+						</columnRender>
+				</column>
+				<column field="FKWC" width="80" align="center">
+					<columnRender>
+							<![CDATA[
+								if(value == "Y"){
+									return "已到";
+								}else if(value == "N"){
+									return "未到";
+								}
+								return "异常"
+							]]>	
+						</columnRender>
+				</column>
+				<column field="SQD_ID" width="0" title=" ">
+					<columnRender>
+							<![CDATA[
+								return "";
+							]]>
+					</columnRender>
+				</column>
+				<event type="rowDblClick" handleFn="apNoopRowDblClick" />
+			</grid>
+			<javascripts>
+				<javascript src="/app/js/qxkz.js"/>
+				<javascript>
+					<![CDATA[						
+						function onBtnFkwc_Clicked(){
+							var rows = $("#" + oz_grid_config.id).grid("getSelections");
+							var rowId = "";
+							var rowSqdId = "";
+							if (null == rows || rows.length === 0) {
+								OZ.Msg.info("请先选择要标记付款完成的项！");
+								return;
+							}
+							for(var i=0;i<rows.length;i++){
+									//alert(rows[i].ID);
+									rowId = rows[i].ID;
+									rowSqdId = rows[i].SQD_ID;
+									_$ExecuteSQL("ds4FmUpdateFkjlWcqk",{ID:rowId});
+									//alert(rowSqdId);
+									//var json1 = _$ExecuteSQL("ds4HtfkSelectStatus",{ID:rowSqdId});
+									//alert(json1.resultSet[0].STATUS);
+									_$ExecuteSQL("ds4HtfkUpdateSqdZtToFkwc",{ID:rowSqdId});
+									alert("付款完成");
+							}
+							ozTB_BtnRefresh_Clicked();
+						}
+						
+						//发票到账功能按钮
+						function onBtnFpdz_Clicked(){
+							
+							var rows = $("#" + oz_grid_config.id).grid("getSelections");
+							var rowId = "";
+							var rowSqdId = "";
+							if (null == rows || rows.length === 0) {
+								OZ.Msg.info("请先选择你要处理的付款记录！");
+								return;
+							}else if(rows.length > 1){
+								OZ.Msg.info("请先选择一项！");
+								return;
+							}
+							
+							for(var i=0;i<rows.length;i++){
+								rowId = rows[i].ID;
+								rowSqdId = rows[i].SQD_ID;
+								var json = _$ExecuteSQL("ds4FmSelectFpdzQk",{ID:rowId});
+								if(json.resultSet[0].FKWC == "Y"){
+									alert("您选择的付款记录，发票已到，不能再执行“发票到账操作”！");
+									return;
+								}else{
+									_$ExecuteSQL("ds4FmUpdateFpdzQk",{ID:rowId});
+									if(rowSqdId == null || rowSqdId == "" || rowSqdId.length ==0){
+										alert("发票到账执行成功！");
+									}else{
+										_$ExecuteSQL("ds4HtfkUpdateFpdz",{ID:rowSqdId});
+										alert("发票到账执行成功！");
+									}
+									ozTB_BtnRefresh_Clicked();
+								}
+							}
+						}
+						
+						var onBtnDelete_Clicked_ = onBtnDelete_Clicked;
+						window.onBtnDelete_Clicked = function (action){
+						var rows = $("#" + oz_grid_config.id).grid("getSelections");
+						if (null == rows || rows.length === 0) {
+							OZ.Msg.info("请先选择要删除的项！");
+							return;
+						}
+						for(var i=0;i<rows.length;i++){
+							//alert(rows[i].SQD_ID);
+							if(rows[i].SQD_ID !="" && rows[i].SQD_ID != null && rows[i].SQD_ID.length>0 ){
+								OZ.Msg.info("不能删除系统自动同步的预算使用信息！！");
+								return;
+							}
+							onBtnDelete_Clicked_(action);
+						}
+						
+					}
+					
+					function getCanUsedTBBtns(){
+							var btnIds = new Array();
+							btnIds.push("btnRefresh");
+							
+							var canEdit = true;
+							if(_$ParentHasFunction("canEditSKZbd")){
+								canEdit = _$CallParentFunction("canEditSKZbd", true);
+							}
+							if(canEdit){
+								return "";
+							}
+							if(isUseFpdz()){
+								btnIds.push("btnFpdz");
+							}
+							return btnIds;
+						}
+					]]>
+				</javascript>
+			</javascripts>
+			<documentation>
+				合同实际付款信息子视图
+			</documentation>
+		</view>
+		
+		<view id="view4FmHtcwtk" name="合同财务条款信息" type="subView" tableRef="OZ_UD_FM_HTCWTK" defaultFormRef="form4FmHtcwtk">
+			<toolbar>
+				<seperator/>
+				<button id="btnNew" text="新建"/>
+				<seperator/>
+				<button id="btnDelete" text="删除"/>
+				<seperator/>
+				<button id="btnRefresh" text="刷新"/>
+			</toolbar>			
+			<search type="none"/>
+			<grid id="ozGrid" selectMode="checkbox" pagination="false" defaultSortField="XH" defaultSortDir="asc">
+				<column field="ID"/>
+				<column field="XH" width="60" renderFn="apDefaultFormatter"/>
+				<column field="TK" width="240" renderFn="apDefaultFormatter"/>
+			</grid>
+			<javascripts>
+				<javascript>
+					<![CDATA[						
+						function getCanUsedTBBtns(){
+							var btnIds = new Array();
+							btnIds.push("btnRefresh");
+							
+							var canEdit = true;
+							if(_$ParentHasFunction("canEditZbd")){
+								canEdit = _$CallParentFunction("canEditZbd", true);
+							}
+							if(canEdit){
+								return "";
+							}
+							return btnIds;
+						}
+						
+						function canEditZbdForm(){
+							var canEdit = true;
+							if(_$ParentHasFunction("canEditZbd")){
+								canEdit = _$CallParentFunction("canEditZbd", true);
+							}
+							return canEdit;
+						}
+					]]>
+				</javascript>
+			</javascripts>
+			<documentation>
+				合同财务条款信息子视图
+			</documentation>
+		</view>
+		
+		<!--  
+		<view id="view4FmHtsjsk" name="合同实际收款信息" type="editableView" tableRef="OZ_UD_FM_HTSJSK" >
+			<toolbar>
+				<seperator/>
+				<button id="btnAdd" text="添加" icon="oz-icon-1223">
+					<event type="click" handleFn="onBtnAdd_Clicked()"/>
+				</button>
+				<seperator/>
+				<button id="btnRefresh" text="刷新"/>
+			</toolbar>			
+			<search type="none"/>
+			<grid id="ozGrid" selectMode="checkbox" pagination="false" defaultSortField="LRRQ" defaultSortDir="asc">
+				<column field="ID" width="24">
+					<columnRender>
+						<![CDATA[
+							return "";
+						]]>	
+					</columnRender>
+				</column>
+				<column field="SKCS" width="40" editorType="text"/>
+				<column field="SKRQ" width="100" editorType="datebox"/>
+				<column field="SKJE" width="150" >
+					<editor>
+						<![CDATA[
+							type:'numberbox',options:{required:true,precision:2}
+						]]>
+					</editor>
+				</column>
+				<column field="YSQFP" width="120" align="center">
+					<editor>
+						<![CDATA[
+								type:'checkbox',options:{on: 'Y',off: 'N'}
+						]]>
+					</editor>
+					<columnRender>
+						<![CDATA[
+							if(value == "Y"){
+								return "是";
+							}else{
+								return "否";
+							}
+						]]>
+					</columnRender>
+				</column>
+				<column field="YKFP" width="80" align="center">
+					<editor>
+						<![CDATA[
+								type:'checkbox',options:{on: 'Y',off: 'N'}
+						]]>
+					</editor>
+					<columnRender>
+						<![CDATA[
+							if(value == "Y"){
+								return "是";
+							}else{
+								return "否";
+							}
+						]]>
+					</columnRender>
+				</column>
+				<column field="SKWC" width="80" align="center">
+					<editor>
+						<![CDATA[
+								type:'checkbox',options:{on: 'Y',off: 'N'}
+						]]>
+					</editor>
+					<columnRender>
+						<![CDATA[
+							if(value == "Y"){
+								return "是";
+							}else{
+								return "否";
+							}
+						]]>
+					</columnRender>
+				</column>
+				<column field="SKBZ" width="80" align="center" editorType="text"/>
+				<column field="ACTION" title="" width="83" align="center">
+					<columnRender>
+						<![CDATA[
+							var canEdit = true;
+							if(_$ParentHasFunction("canEditYszj")){
+								canEdit = _$CallParentFunction("canEditYszj", true);
+							}
+							if(canEdit){
+								if (row.editing){
+									var s = '<a href="#" onclick="onRowConfirm_Clicked(' + index + ')">确定</a> ';
+									var c = '<a href="#" onclick="onRowCancel_Clicked(' + index + ')">取消</a>';
+									return s+c;
+								} else {
+									var e = '<a href="#" onclick="onRowEdit_Clicked(' + index + ')">编辑</a> ';
+									var d = '<a href="#" onclick="onRowDelete_Clicked(' + index + ')">删除</a>';
+									return e+d;
+								}
+							}
+						]]>	
+					</columnRender>
+				</column>
+				<column field="HT_ID" width="0" title=""/>
+			</grid>
+			<javascripts>
+				<javascript>
+					<![CDATA[	
+						var abs = [
+							{value:'Y', name:'是'},
+							{value:'N', name:'否'}
+						];
+											
+						function getCanUsedTBBtns(){
+							var btnIds = new Array();
+							btnIds.push("btnRefresh");
+							
+							var canEdit = true;
+							if(_$ParentHasFunction("canEditZbd")){
+								canEdit = _$CallParentFunction("canEditZbd", true);
+							}
+							if(canEdit){
+								return "";
+							}
+							return btnIds;
+						}
+						
+						//添加行信息
+						function onBtnAdd_Clicked(){
+							var rowTpl = {
+								ID:-1,
+								SKCS:_$GetRowCount()+1,
+								editing:false
+							};
+							_$InsertRow(1,rowTpl);
+						}
+						
+						function onAfterRowConfirm(index){
+							updateTotalInfo();
+						}
+						
+						function onAfterDataLoad(data){
+							updateTotalInfo();
+						}
+						
+						function onGetGridChangeDatas(){
+							updateTotalInfo();
+						}
+						
+						function updateTotalInfo(){
+							$("#TD_FPZJE").html(_$FormatCur(_$FSumCol("FPJE")));
+						}
+												
+						function onBtnGetDatas_Clicked(){
+							alert($.toJSON(_$GetGridChangeDatas()));
+						}
+					]]>
+				</javascript>
+			</javascripts>
+			<documentation>
+				合同实际收款信息子视图
+			</documentation>
+		</view>
+		-->
+		
+		<view id="view4FmHtsjsk" name="合同实际收款信息" type="subView" tableRef="OZ_UD_FM_HTSJSK" defaultFormRef="form4FmHtsjsk" >
+			<toolbar>
+				<seperator/>
+				<button id="btnNew" text="新建"/>
+				<seperator/>
+				<button id="btnDelete" text="删除"/>
+				<seperator/>
+				<button id="btnRefresh" text="刷新"/>
+			</toolbar>			
+			<search type="none"/>
+			<grid id="ozGrid" selectMode="checkbox" pagination="false" defaultSortField="LRRQ" defaultSortDir="asc">
+				<column field="ID"/>
+				<column field="SKCS" width="40" renderFn="apDefaultFormatter"/>
+				<column field="SKRQ" width="100" renderFn="apDefaultFormatter"/>
+				<column field="SKJE" width="150" renderFn="apCurrencyFormatter" />
+				<column field="YKFP" width="80" align="center">
+					<columnRender>
+						<![CDATA[
+							if(value == "Y"){
+								return "是";
+							}else{
+								return "否";
+							}
+						]]>
+					</columnRender>
+				</column>
+				<column field="SKWC" width="80" align="center">
+					<columnRender>
+						<![CDATA[
+							if(value == "Y"){
+								return "是";
+							}else{
+								return "否";
+							}
+						]]>
+					</columnRender>
+				</column>
+			</grid>
+			<javascripts>
+				<javascript>
+					<![CDATA[						
+						function getCanUsedTBBtns(){
+							var btnIds = new Array();
+							btnIds.push("btnRefresh");
+							
+							var canEdit = true;
+							if(_$ParentHasFunction("canEditSKZbd")){
+								canEdit = _$CallParentFunction("canEditSKZbd", true);
+							}
+							if(canEdit){
+								return "";
+							}
+							return btnIds;
+						}
+					]]>
+				</javascript>
+			</javascripts>
+			<documentation>
+				合同实际收款信息子视图
+			</documentation>
+		</view>
+
+		<view id="view4FmHtysk" name="合同预收款" type="editableView" tableRef="OZ_UD_FM_HTYSK" >
+			<toolbar>
+				<seperator/>
+				<button id="btnAdd" text="添加" icon="oz-icon-1223">
+					<event type="click" handleFn="onBtnAdd_Clicked()"/>
+				</button>
+				<seperator/>
+				<button id="btnRefresh" text="刷新"/>
+			</toolbar>			
+			<search type="none"/>
+			<grid id="ozGrid" selectMode="checkbox" pagination="false" defaultSortField="SKCS" defaultSortDir="asc">
+				<column field="ID" width="24">
+					<columnRender>
+						<![CDATA[
+							return "";
+						]]>	
+					</columnRender>
+				</column>
+				<column field="SKCS" width="40" editorType="text"/>
+				<column field="JSRQ" width="100" editorType="datebox"/>
+				<column field="JSJE" width="150" >
+					<editor>
+						<![CDATA[
+							type:'numberbox',options:{required:true,precision:2}
+						]]>
+					</editor>
+				</column>
+				<column field="YSQFP" width="120" align="center">
+					<editor>
+						<![CDATA[
+								type:'checkbox',options:{on: 'Y',off: 'N'}
+						]]>
+					</editor>
+					<columnRender>
+						<![CDATA[
+							if(value == "Y"){
+								return "是";
+							}else{
+								return "否";
+							}
+						]]>
+					</columnRender>
+				</column>
+				<column field="YKFP" width="80" align="center">
+					<editor>
+						<![CDATA[
+								type:'checkbox',options:{on: 'Y',off: 'N'}
+						]]>
+					</editor>
+					<columnRender>
+						<![CDATA[
+							if(value == "Y"){
+								return "是";
+							}else{
+								return "否";
+							}
+						]]>
+					</columnRender>
+				</column>
+				<column field="SKBZ" width="80" align="center" editorType="text"/>
+				<column field="ACTION" title="" width="83" align="center">
+					<columnRender>
+						<![CDATA[
+							var canEdit = true;
+							if(_$ParentHasFunction("canEditSKZbd")){
+								canEdit = _$CallParentFunction("canEditSKZbd", true);
+							}
+							if(canEdit){
+								if (row.editing){
+									var s = '<a href="#" onclick="onRowConfirm_Clicked(' + index + ')">确定</a> ';
+									var c = '<a href="#" onclick="onRowCancel_Clicked(' + index + ')">取消</a>';
+									return s+c;
+								} else {
+									var e = '<a href="#" onclick="onRowEdit_Clicked(' + index + ')">编辑</a> ';
+									var d = '<a href="#" onclick="onRowDelete_Clicked(' + index + ')">删除</a>';
+									return e+d;
+								}
+							}
+						]]>	
+					</columnRender>
+				</column>
+				<event type="rowDblClick" handleFn="apNoopRowDblClick" />
+			</grid>
+			<javascripts>
+				<javascript>
+					<![CDATA[	
+						var abs = [
+							{value:'Y', name:'是'},
+							{value:'N', name:'否'}
+						];
+											
+						function getCanUsedTBBtns(){
+							var btnIds = new Array();
+							btnIds.push("btnRefresh");
+							
+							var canEdit = true;
+							if(_$ParentHasFunction("canEditSKZbd")){
+								canEdit = _$CallParentFunction("canEditSKZbd", true);
+							}
+							if(canEdit){
+								return "";
+							}
+							return btnIds;
+						}
+						
+						//添加行信息
+						function onBtnAdd_Clicked(){
+							var rowTpl = {
+								ID:-1,
+								HT_ID:_parentId,
+								SKCS:_$GetRowCount()+1,
+								LRR:_curUser.userInfo.name,
+								LRR_ID:_curUser.userInfo.id,
+								LRRQ:oz.getCurrentDate(),
+								editing:false
+							};
+							_$InsertRow(1,rowTpl);
+						}
+						
+						function onAfterRowConfirm(index){
+							updateTotalInfo();
+						}
+						
+						function onAfterDataLoad(data){
+							updateTotalInfo();
+						}
+						
+						function onGetGridChangeDatas(){
+							updateTotalInfo();
+						}
+						
+						function updateTotalInfo(){
+							//$("#TD_YSJE").html(_$FormatCur(_$FSumCol("JSJE")));
+						}
+												
+						function onBtnGetDatas_Clicked(){
+							alert($.toJSON(_$GetGridChangeDatas()));
+						}
+						
+						function onRowDblClick(index, row){
+							var canEdit = true;
+							if(_$ParentHasFunction("canEditSKZbd")){
+								canEdit = _$CallParentFunction("canEditFpxx", true);
+							}
+							if(canEdit){
+								//alert(5);
+								oz.ap.edittable.beginEdit(index);
+							}
+						}
+					]]>
+				</javascript>
+			</javascripts>
+			<documentation>
+				合同预收款信息子视图
+			</documentation>
+		</view>
+
+	</views>
+
+	<forms>
+		<form formType="form" id="form4FmHtxx" name="合同信息登记表单">
+			<toolbar>
+				<seperator/>
+				<button id="btnBack" text="返回"/>
+				<seperator/>
+				<button id="btnSave" text="保存"/>
+				<seperator/>
+				<button id="btnFzZbd" text="复制为新建合同" icon="oz-icon-0416">
+					<event type="click" handleFn="onBtnFzZbd_Clicked()"/>
+				</button>
+			</toolbar>
+			
+			<body>
+			<div class="oz-form-title" style="text-align:center">合同信息</div>
+				<table cellpadding="2" cellspacing="0" class="oz-form-bordertable">
+					<tr class="oz-form-emptyTR">
+						<td width="120"></td>
+						<td width="280"></td>
+						<td width="120"></td>
+						<td width="280"></td>
+					</tr>
+					<tr>
+						<td class="oz-form-label-r">合同名称：</td>
+						<td class="oz-property" colspan="3">
+							<input id="HTMC" notNull="true"/>
+						</td>
+					</tr>
+					<tr>
+						<td class="oz-form-label-r">签订日期：</td>
+						<td class="oz-property">
+							<input id="QDRQ" notNull="true"/>
+						</td>
+						<td class="oz-form-label-r">合同编号：</td>
+						<td class="oz-property">
+							<input id="HTBH" style="width:200px;" notNull="true"/>
+							<button id="btnZiDongBianhao" name="编号">
+								<event type="click">
+									<![CDATA[
+										// 获取合同编号
+										_$Val("LX_FL_MC", _$GetSelectedOptionName("LX_FL"));
+										var htbh = _$Val("HTBH");
+										var qdrq = _$Val("QDRQ");
+										var ssdw = _$GetSelectedOptionName("SSDW");
+										var lxfl = _$GetSelectedOptionName("LX_FL");
+										if(qdrq==null || qdrq=="" || qdrq.length<0){
+											alert("请确认已填写<合同签订日期、所属单位、合同类型（法律）>，再点击编号！");
+											return false;
+										}else if(ssdw.length<=1 || ssdw == " "){
+											alert("请填写合同所属单位，再点击编号！");
+											return false;
+										}else if(lxfl.length<=1 || lxfl == " "){
+											alert("请填写合同类型（法律），再点击编号！");
+											return false;
+										}
+										
+										if(null == htbh || htbh.length == 0){
+											var idPrefix = "YQ" + _$Val("SSDW") + _$Val("LX_FL") + _$Val("QDRQ").substr(0, 4);
+											_$GetNewCaseId("HTBH", "HTBH", onBtnSave_Clicked, "", 4, idPrefix);
+										}
+									]]>
+								</event>
+							</button>
+						</td>
+					</tr>
+					<tr>
+						<td class="oz-form-label-r">合同方名称：</td>
+						<td class="oz-property">
+							<select id="SEL_HTFMC" width="275px;">
+								<event type="change"> 
+											<![CDATA[
+												// 获取所选择收款单位的开户银行及银行帐号
+												_$Val("HTFMC", _$Val("SEL_HTFMC"));
+												
+												var htfmc = _$Val("HTFMC");
+												if(null != htfmc && htfmc.length > 0){
+													_$HideValidationMsg("span_htbh");
+												}	
+											]]>
+										</event> 
+							</select>
+						</td>
+						<td class="oz-form-label-r">我方经办人：</td>
+						<td class="oz-property">
+							<input id="WFJBR" notNull="true" style="width:200px;" readonly="true"/>
+							<button id="btnSelectFyfsr" name="选择...">
+									<event type="click">
+										<![CDATA[ 
+											OZ.Organize.selectUserInfo(function(userInfo){
+												_$Val("WFJBR", userInfo.name);
+												_$Val("WFJBR_ID", userInfo.id);
+												OZ.Organize.getUserInfoDetail(userInfo.id,function(detail){
+													_$Val("WFJBR_BM", detail.ouInfoName);
+													_$Val("WFJBR_BMID",detail.ouInfoId);
+												});
+											});	
+										]]>
+									</event>
+							</button>
+						</td>
+					</tr>
+					<tr>
+						<td class="oz-form-label-r">合同金额：</td>
+						<td class="oz-property">
+							<input id="HTJE" notNull="true" width="120"/>
+							<select id="HTJEBZ" width="120px" dataDict="BIZH">
+								<event type="change">
+									<![CDATA[
+										_$Val("HTJEBZ_MC", _$GetSelectedOptionName("HTJEBZ"));
+									]]>
+								</event>
+							</select>
+						</td>
+						<td class="oz-form-label-r">所属单位：</td>
+						<td class="oz-property">
+							<select id="SSDW" notNull="true" dataDict="HTSSDW"/>
+						</td>
+					</tr>
+					<tr>
+						<td class="oz-form-label-r">合同类型(法律)：</td>
+						<td class="oz-property">
+							<select id="LX_FL" notNull="true" dataDict="HTLB">
+								<event type="change">
+									<![CDATA[
+										_$Val("LX_FL_MC", _$GetSelectedOptionName("LX_FL"));
+									]]>
+								</event>
+							</select>
+						</td>
+						<td class="oz-form-label-r">收付款类型：</td>
+						<td class="oz-property">
+							<select id="LX_SFK" notNull="true">
+								<option value="FK" name="付款合同"/>
+								<option value="SK" name="收款合同"/>
+								<option value="BSJZJSZ" name="不涉及资金收支"/>
+								<event type="change">
+									<![CDATA[
+										_$Val("LX_SFK_MC", _$GetSelectedOptionName("LX_SFK"));
+										var shkLx = _$Val("LX_SFK");
+										if(shkLx =="SK"){
+											_$ShowTab("tab_04");
+											_$HideTab("tab_05");
+											_$HideTab("tab_06");
+										}else if(shkLx=="YSK"){
+											_$ShowTab("tab_05");
+											_$HideTab("tab_04");
+											_$HideTab("tab_06");
+										}else if(shkLx=="FK"){
+											_$ShowTab("tab_06");
+											_$HideTab("tab_04");
+											_$HideTab("tab_05");
+										}else{
+											_$HideTab("tab_04");
+											_$HideTab("tab_05");
+											_$HideTab("tab_06");
+										}
+									]]>
+								</event>
+							</select>
+						</td>
+					</tr>
+					<!--  
+					<tr>
+						<td class="oz-form-label-r">需贴印花税：</td>
+						<td>
+							<radio id="XTYHS" value="Y" name="是"/>
+							<radio id="XTYHS" value="N" name="否"/>
+						</td>
+						<td class="oz-form-label-r">已贴印花税：</td>
+						<td>
+							<radio id="YTYHS" value="Y" name="是"/>
+							<radio id="YTYHS" value="N" name="否"/>
+						</td>
+					</tr>
+					-->
+					<tr>
+						<td class="oz-form-label-r">合同类型(印花税)：</td>
+						<td class="oz-property">
+							<input id="LX_YHS" width="203" readonly="true"/>
+							<button id="btnSelectYHS" name="选择...">
+								<event type="click">
+									<![CDATA[
+										apSelectFromView("fm_cfg_yhs.selectView4fmCfgYHS", 570, 330, "选择印花税", function(rows){
+											$("#LX_YHS").val(rows[0].MC);
+											$("#YHSL").val(rows[0].SL); 
+											_$TriggerComputeField("YHSL");
+										});
+									]]>
+								</event>
+								<displayMode triggerBy="observe" default="0">
+									<![CDATA[
+										return 1;
+									]]>
+								</displayMode>
+							</button>
+						</td>
+						<td class="oz-form-label-r">印花税率：</td>
+						<td class="oz-property">
+							<!--  
+							<input id="YHSL" width="60" readonly="true"/>
+							-->
+							<computedText id="span_yhsl" triggerBy="observe,onload" observeFields="YHSL">
+								<value>
+									<![CDATA[
+										return _$Val("YHSL")+"‰";
+									]]>
+								</value>
+							</computedText>
+							<span>
+								<![CDATA[
+								&nbsp;&nbsp;&nbsp;&nbsp;
+								印花税金额：
+								]]>
+							</span>
+							<computedField id="YHSJE" width="130" observeFields="YHSL,HTJE">
+								<value>
+									<![CDATA[
+										var HTJE = $("#HTJE").val();
+										var YHSL = $("#YHSL").val();
+										if(null == HTJE || HTJE.length == 0 || null == YHSL || YHSL.length == 0){
+											return "0.00";
+										}
+										return oz.Number.formatFloat(oz.Number.parseFloat((floatVal("HTJE") * floatVal("YHSL")) / 1000), 2);
+									]]>
+								</value>	
+							</computedField>
+						</td>
+					</tr>
+					<tr>
+						<td class="oz-form-label-r">合同状态：</td>
+						<td class="oz-property">
+							<select id="HTZT" notNull="true">
+								<option value="ZQ" name="在签"/>
+								<option value="YQ" name="已签"/>
+								<option value="GB" name="关闭"/>
+								<option value="DJ" name="冻结"/>
+								<option value="ZF" name="作废"/>
+								<event type="change">
+									<![CDATA[
+										_$Val("HTZT_MC", _$GetSelectedOptionName("HTZT"));
+									]]>
+								</event>
+							</select>
+						</td>
+						<td class="oz-form-label-r">合同期限：</td>
+						<td class="oz-property">
+							<input id="HTQX" notNull="true"/>
+						</td>
+					</tr>
+					<tr>
+						<td class="oz-form-label-r">合同归属信息：</td>
+						<td class="oz-property" colspan="3">
+							<computedText id="span_ysgs" triggerBy="observe,onload" observeFields="YSGS_ID">
+										<value>
+											<![CDATA[
+												var fullName = "";
+												var name = _$Val("YSGSLX_1");
+												if(null != name && name.length > 0)
+													fullName += name;
+												name = _$Val("YSGSLX_2");
+												if(null != name && name.length > 0)
+													fullName += "/" + name;	
+												name = _$Val("YSGSLX_3");
+												if(null != name && name.length > 0)
+													fullName += "/" + name;	
+												name = _$Val("YSGSLX_4");
+												if(null != name && name.length > 0)
+													fullName += "/" + name;														
+												return fullName;
+											]]>
+										</value>
+									</computedText>
+									<button id="btnSelectFylb" name="选择...">
+										<event type="click">
+											<![CDATA[ 
+												var sqbmid = _$Val("WFJBR_BMID");
+												//_$OpenDlgPage("fm_ysxx", "form4FmYsflxz", "", 420, 420, "预算分类选择对话框", "dlgFmYsflxz", 
+												_$OpenDlgPage("fm_ysxx", "form4FmYsflxz", "BH:bz_htfk_kmxz;SQBMID:"+sqbmid, 660, 570, "预算分类选择对话框", "dlgFmYsflxz",
+													function(result){
+														_$Val("YSGS_ID", result.ID);
+														_$Val("YSGSLX_1", result.fullName);
+														//_$Val("YSGSLX_2", result.EJMC);
+														//_$Val("YSGSLX_3", result.SJMC);
+														//_$Val("YSGSLX_4", result.SIJMC);
+														_$HideValidationMsg("span_ysgs");
+														_$TriggerComputeFields(["YSGS_ID"]);
+													}, 
+													function(){
+														
+													}
+												);
+											]]>
+										</event>
+									</button>
+									<button id="btnCleanYsxx" name="清空">
+										<event type="click">
+											<![CDATA[ 
+												_$Val("YSGS_ID","");
+												_$Val("YSGSLX_1","");
+												$("#span_ysgs").text("");
+											]]>
+										</event>
+									</button>
+						<!--  
+							<linkselect id="YSGSLX_1" width="120px" dataDict="CWKM">
+							</linkselect>
+							<span> /</span>
+							<linkselect id="YSGSLX_2" width="120px" parentRef="YSGSLX_1">
+							</linkselect>
+							<span> /</span>
+							<linkselect id="YSGSLX_3" width="120px" parentRef="YSGSLX_2">
+							</linkselect>
+							<span> /</span>
+							<linkselect id="YSGSLX_4" width="120px" parentRef="YSGSLX_3">
+							</linkselect>
+							<button id="btnSelectCWKM" name="选择...">
+								<event type="click">
+									<![CDATA[
+										alert("功能完善中...");
+									]]>
+								</event>
+							</button>
+							-->
+						</td>
+					</tr>
+					<tr>
+						<td class="oz-form-label-r">备注：</td>
+						<td class="oz-property" colspan="3">
+							<input id="HTBZ" height="80px"/>
+						</td>
+					</tr>
+				</table>
+				
+				<!-- 页签 -->
+				<formTabs height="336">
+					<formTab id="tab_01" title="财务条款摘要">
+						<iframe id="IFRAME_01" class="oz-tab-iframe" height="100%" width="100%" frameborder="0" viewRef="view4FmHtcwtk|FK_OZ_UD_FM_TK_REF_HT">
+						</iframe>
+					</formTab>
+					<formTab id="tab_02" title="合同附件" overflow="auto">
+						<table cellpadding="2" cellspacing="0" class="oz-form-bordertable" width="100%">
+							<tr>
+								<td width="100%" valign="top">
+									<attachment id="ATTACHMENT" style="border:0px solid #ccc;margin:0;height:305px;width:100%;"/>
+								</td>
+							</tr>
+					  	</table>
+					</formTab>
+					<formTab id="tab_03" title="里程碑提醒">
+						<iframe id="IFRAME_03" class="oz-tab-iframe" height="100%" width="100%" frameborder="0" src="">
+							
+						</iframe>
+					</formTab>
+					<formTab id="tab_04" title="实际收款信息">
+						<iframe id="IFRAME_04" class="oz-tab-iframe" height="200px" width="100%" frameborder="0" viewRef="view4FmHtsjsk|FK_OZ_UD_FM_SK_REF_HT">
+							<event type="dataChange"> 
+								<![CDATA[
+									var total = 0.00;
+									if(null != gridData && gridData.length > 0){
+										for(var i = 0; i < gridData.length; i++){
+											total += _$ParseFloat(gridData[i].SKJE);
+										}										
+									}
+									_$Val("LJSFKJE", _$FormatFloat(total));
+									_$TriggerComputeFields(["LJSFKJE"]);
+								]]>
+							</event>
+						</iframe>
+						<table cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="190px" style="font-weight:bold;text-align:right">已收金额合计（元）：</td>
+								<td>
+									<computedText id="span_ljskje" triggerBy="observe,onload" observeFields="LJSFKJE">
+										<value>
+											<![CDATA[
+												return _$FormatCur(_$Val("LJSFKJE"));
+											]]>
+										</value>
+									</computedText>
+								</td>
+							</tr>
+							<tr>
+								<td width="190px" style="font-weight:bold;text-align:right">未收金额（元）：</td>
+								<td>
+									<computedText id="span_wsje" triggerBy="observe,onload" observeFields="LJSFKJE">
+										<value>
+											<![CDATA[
+												var wsje = oz.Number.formatFloat(_$FloatVal("HTJE") - _$FloatVal("LJSFKJE"));
+												return _$FormatCur(wsje);
+											]]>
+										</value>
+									</computedText>
+								</td>
+							</tr>
+						</table>
+					</formTab>
+					<formTab id="tab_05" title="预收款信息">
+						<iframe id="IFRAME_05" class="oz-tab-iframe" height="200px" width="100%" frameborder="0" viewRef="view4FmHtysk|FK_OZ_UD_FM_YSK_REF_HT">
+							<event type="dataChange"> 
+								<![CDATA[
+									var total = 0.00;
+									if(null != gridData && gridData.length > 0){
+										for(var i = 0; i < gridData.length; i++){
+											total += _$ParseFloat(gridData[i].JSJE);
+										}										
+									}
+									_$Val("LJSFKJE", _$FormatFloat(total));
+									_$TriggerComputeFields(["LJSFKJE"]);
+								]]>
+							</event>
+						</iframe>
+						<table cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="190px" style="font-weight:bold;text-align:right">已收金额合计（元）：</td>
+								<td>
+									<computedText id="span_ljyfkje" triggerBy="observe,onload" observeFields="LJSFKJE">
+										<value>
+											<![CDATA[
+												return _$FormatCur(_$Val("LJSFKJE"));
+											]]>
+										</value>
+									</computedText>
+								</td>
+							</tr>
+							<tr>
+								<td width="190px" style="font-weight:bold;text-align:right">未收金额（元）：</td>
+								<td>
+									<computedText id="span_wsyfkje" triggerBy="observe,onload" observeFields="LJSFKJE">
+										<value>
+											<![CDATA[
+												var wsje = oz.Number.formatFloat(_$FloatVal("HTJE") - _$FloatVal("LJSFKJE"));
+												return _$FormatCur(wsje);
+											]]>
+										</value>
+									</computedText>
+								</td>
+							</tr>
+						</table>
+					</formTab>
+					<formTab id="tab_06" title="实际付款信息">
+						<iframe id="IFRAME_06" class="oz-tab-iframe" height="200px" width="100%" frameborder="0" viewRef="view4FmHtsjfk|FK_OZ_UD_FM_FK_REF_HT">
+							<event type="dataChange"> 
+								<![CDATA[
+									var total = 0.00;
+									var fkxhs = 0;
+									if(null != gridData && gridData.length > 0){
+										for(var i = 0; i < gridData.length; i++){
+											total += _$ParseFloat(gridData[i].FKJE);
+											if(gridData[i].FKXH>fkxhs)
+											fkxhs = gridData[i].FKXH
+										}										
+									}
+									//alert(fkxhs);
+									var gridlen = _$ParseInt(gridData.length);
+									_$Val("YZFCS",fkxhs);
+									_$Val("LJSFKJE", _$FormatFloat(total));
+									_$TriggerComputeFields(["LJSFKJE"]);
+								]]>
+							</event>
+						</iframe>
+						<table cellpadding="0" cellspacing="0">
+							<tr>
+								<td width="190px" style="font-weight:bold;text-align:right">已付金额合计（元）：</td>
+								<td>
+									<computedText id="span_ljfkje" triggerBy="observe,onload" observeFields="LJSFKJE">
+										<value>
+											<![CDATA[
+												return _$FormatCur(_$Val("LJSFKJE"));
+											]]>
+										</value>
+									</computedText>
+								</td>
+							</tr>
+							<tr>
+								<td width="190px" style="font-weight:bold;text-align:right">未付金额（元）：</td>
+								<td>
+									<computedText id="span_wfje" triggerBy="observe,onload" observeFields="LJSFKJE">
+										<value>
+											<![CDATA[
+												var wfje = oz.Number.formatFloat(_$FloatVal("HTJE") - _$FloatVal("LJSFKJE"));
+												return _$FormatCur(wfje);
+											]]>
+										</value>
+									</computedText>
+								</td>
+							</tr>
+						</table>
+					</formTab>
+				</formTabs>
+				
+				<hiddenFields>
+					<input id="ID"/>
+					<input id="LRR"/><input id="LRR_ID"/><input id="LRRQ"/>
+					<input id="WFJBR_ID"/><input id="WFJBR_BMID"/><input id="WFJBR_BM"/>
+					<input id="YZFCS"/><input id="LJSFKJE"/><input id="XCTXRQ"/>
+					<input id="HTJEBZ_MC"/><input id="LX_FL_MC"/><input id="LX_SFK_MC"/>
+					<input id="HTZT_MC"/><input id="HTBH_SCB"/>
+					<input id="UNIT_ID"/><input id="XTYHS"/><input id="YTYHS"/><input id="YHSL"/><input id="HTFMC"/>
+					
+					<input id="YSGS_ID"/><input id="YSGSLX_1"/><input id="YSGSLX_2"/><input id="YSGSLX_3"/><input id="YSGSLX_4"/>
+				</hiddenFields>
+			</body>
+			
+			<events>
+				<event type="load">
+					<![CDATA[
+					//_$SetAttachmentStatus(DispalyMode.READONLY);
+						//帮助信息
+						var id = _$Val("ID");
+						if(null == id || id.length == 0 || id == "-1"){
+							_$OpenHelpDlg("fm_cfg_bzxx", "form4FmBzdhk", "BH:HTXX.LRHT.CJ", 480, 480, "表单填写说明", "dlgFmBzxxTx", 
+								function(result){
+									// 不做任何处理
+								}, 
+								function(){
+									_$CloseWindow();
+								}
+							);
+							}
+						// 控制表单权限
+						//若非合同录入岗、且合同录入人或经办人都不是当前用户，及设置合同不可编辑 update by:chenht 2012-9-5
+						var formEdit = isHTAdmin();
+						if(!formEdit || !(_$IsCurUserInfo("WFJBR_ID") || _$IsCurUserInfo("LRR_ID"))){
+								_$SetFormStatus(DispalyMode.READONLY);
+						}
+						
+						//财务管理部合同岗可编辑“印花税、合同状态、归属信息”
+						if(isZyqSkxxAdmin()){
+							//_$SetInputStatus("LX_YHS",DispalyMode.EDIT);
+							_$Show("btnSelectYHS");
+							_$SetSelectStatus("HTZT",DispalyMode.EDIT);
+							_$Show("btnSelectFylb");
+							_$Show("btnCleanYsxx");
+						}
+						initHTFMC();
+					]]>
+				</event>
+				<event type="beforeSave">
+					<![CDATA[
+						_$Val("LX_SFK_MC", _$GetSelectedOptionName("LX_SFK"));
+						_$Val("HTZT_MC", _$GetSelectedOptionName("HTZT"));
+						_$Val("LX_FL_MC", _$GetSelectedOptionName("LX_FL"));
+						_$Val("HTJEBZ_MC", _$GetSelectedOptionName("HTJEBZ"));
+						
+						_$Val("HTFMC",_$Val("SEL_HTFMC"));
+						
+						//判断手工填写的合同编号是否重复
+						var ids = _$Val("ID");
+						var htbhs = _$Val("HTBH");
+						if(null != htbhs && htbhs.length > 0){
+							var json = _$ExecuteSQL("ds4FmPdHtbh",{HTBH:htbhs,ID:ids});;
+							if(json.resultCount >0){
+								alert("该合同编号已存在其他合同中，不能重复使用，请重新填写！");
+								return false;
+							} 
+						}
+						// 获取合同编号
+						//var htbh = _$Val("HTBH");
+						//if(null == htbh || htbh.length == 0){
+							//var idPrefix = "YQ" + _$Val("SSDW") + _$Val("LX_FL") + _$Val("QDRQ").substr(0, 4);
+							//_$GetNewCaseId("HTBH", "HTBH", onBtnSave_Clicked, "", 4, idPrefix);
+						//	return false;
+					//	}
+						return true;
+					]]>
+				</event>
+			</events>
+			<javascripts>
+				<javascript src="/app/js/qxkz.js"/>
+				<javascript>
+					<![CDATA[
+						function postOpen(){
+							//控制子页签显示、隐藏
+							var shkLx = _$Val("LX_SFK");
+							var id = _$Val("ID");
+								if(shkLx =="SK"){
+									_$ShowTab("tab_04");
+									_$HideTab("tab_05");
+									_$HideTab("tab_06");
+								}else if(shkLx=="YSK"){
+									_$ShowTab("tab_05");
+									_$HideTab("tab_04");
+									_$HideTab("tab_06");
+								}else if(shkLx=="FK"){
+									_$ShowTab("tab_06");
+									_$HideTab("tab_04");
+									_$HideTab("tab_05");
+								}else{
+									_$HideTab("tab_04");
+									_$HideTab("tab_05");
+									_$HideTab("tab_06");
+								}
+						}
+						
+						// 子页签权限控制
+						function canEditZbd(){
+							id = _$Val("ID");
+							if((null != id && id.length > 0 && id != "-1") && isHTAdmin())
+							return true;
+						}
+						//实际收款、预收款子页签权限控制
+						function canEditSKZbd(){
+							id = _$Val("ID");
+							if((null != id && id.length > 0 && id != "-1") && isZyqSkxxAdmin())
+							return true;
+						}
+						
+						//按钮控制
+						function getCanUsedTBBtns(){
+							var btnIds = new Array();
+							btnIds.push("btnBack");
+							var id = _$Val("ID");
+							if(isHTAdmin() || isZyqSkxxAdmin()){
+								btnIds.push("btnSave");
+								var id = _$Val("ID");
+								if(null != id && id.length > 0 && id != "-1"){
+									btnIds.push("btnFzZbd");
+								}
+							}
+							return btnIds;
+						}
+						
+						//function isHTAdmin(){
+							//return _$IsInGroups("超级管理岗", "财务管理部总经理");
+						//}
+						//合同提醒功能						
+						function getFormTabSrc(tabId){
+							var src = contextPath;
+							if("tab_03" == tabId){
+								src += "/module/reminderAction.do?action=display";
+								src += "&srcFileId=" + _apForm.docType + "_" + getOzEntityId();
+								if(isHTAdmin())
+									src += "&editFlag=y";
+							}					
+							return src;
+						}
+						
+						function onPostFormFirstSave(){
+							var oldFileId = _apForm.docType + "_" + $("#ozuuid").val();
+							var newFileId = _apForm.docType + "_" + getOzEntityId();
+							var strUrl = contextPath + "/module/reminderAction.do?action=swapSrcFile";
+							strUrl += "&timeStamp=" + new Date().getTime();
+							$.syncpost(
+								strUrl, 
+								{oldFileId:oldFileId, newFileId:newFileId},
+								function(json){
+									if(json.result === true){
+										// Do nothing...
+									}else{
+										OZ.Msg.warn(json.msg);
+									}
+								},
+								"json"
+							);
+						}
+						
+						// 初始化合同方名称
+						var _hasRenderSkdw = false;
+						function initHTFMC(){
+							var selSkdwObj = document.getElementById("SEL_HTFMC");							
+							selSkdwObj.length = 0;
+							selSkdwObj.options[selSkdwObj.length] = new Option("", "");
+							var json = _$ExecuteSQL("ds4FmGetHtfmc",{WFJBR_ID:_$Val("WFJBR_ID")});
+							if(json.resultCount > 0){
+								for(var i = 0; i < json.resultCount; i++){
+									var name = json.resultSet[i].HTFMC;
+									if(null != name && name.length > 0){
+										selSkdwObj.options[selSkdwObj.length] = new Option(name, name);
+									}
+								}
+								var htfmc = _$Val("HTFMC");
+								if(null != htfmc && htfmc.length > 0){
+									_$Val("SEL_HTFMC", htfmc);
+								}	
+							}
+							if(_hasRenderSkdw)
+								$("#SEL_HTFMC").reoladCombobox();
+							else
+								$("#SEL_HTFMC").combobox({editable:true});
+						}
+						
+						//复制合同主表单信息
+						function onBtnFzZbd_Clicked(){
+							_$Val("ID","-1");
+							_$Val("HTBH","");
+							$("#tabCt").tabs("activeTab","tab_02");
+							alert("该合同已复制为新合同，请重新修改合同编号，完成后点击“保存”按钮！");
+							oz.ap.form.renewAttachment();
+							oz.ap.form.reloadFormTab();
+							oz.ap.form.renewAttachment();
+						}
+					]]>
+				</javascript>
+				<javascript src="/app/js/oz-dyna-help.js"/>
+			</javascripts>
+			<csss>
+				<css src="/app/css/oz-dyna-help.css" />
+				<css>
+					<![CDATA[
+					
+					]]>
+				</css>
+			</csss>
+			<documentation>
+				合同信息登记表单
+			</documentation>
+		</form>
+		
+		<form formType="dlgForm" id="form4FmHtcwtk" name="合同财务条款信息" tableRef="OZ_UD_FM_HTCWTK" style="width:600px;">
+			<body>
+				<table cellpadding="0" cellspacing="0" class="oz-form-bordertable">
+					<tr class="oz-form-emptyTR">
+						<td width="15%"></td>
+						<td width="85%"></td>	
+					</tr>
+					<tr>
+						<td class="oz-form-label-c">条款序号：</td>
+						<td class="oz-property">
+							<input id="XH" readonly="true" style="width:50px">
+								<displayMode triggerBy="observe,onload" default="1">
+								</displayMode>
+							</input>
+						</td>
+					</tr>
+					<tr>
+						<td class="oz-form-label-c">条款内容：</td>
+						<td class="oz-property">
+							<input id="TK"  notNull="true">
+								<displayMode triggerBy="observe,onload" default="1">
+									<![CDATA[
+										if(isHTAdmin()){
+											return 2;
+										}
+										return 1;
+									]]>
+								</displayMode>
+							</input>
+						</td>
+					</tr>
+					<tr>
+						<td class="oz-form-label-c">附件支持：</td>
+						<td class="oz-property">
+							<attachment id="ATTACHMENT" style="border:0px solid #ccc;margin:0;height:305px;width:100%;"/>
+						</td>
+					</tr>
+				</table>
+				<hiddenFields>
+					<input id="ID"/>
+					<input id="HT_ID"/>
+				</hiddenFields>
+			</body>
+			
+			<events>
+				<event type="load">
+					<![CDATA[
+						//alert("call FormLoad event...")
+						var xh = _$Val("XH");
+						if(xh == null || xh.length<=0){
+							_$ExecuteSQL("ds4FmSelectHtcwtkXh",{HT_ID:_$Val("HT_ID")}, function(json){
+									if(json.resultCount == 0){
+										//alert("执行影响到的行数为0");
+										_$Val("XH","1");
+									}else{
+										for(var i = 0; i < json.resultSet.length; i++){
+											//alert(json.resultSet[i].TK_XH);
+											if(json.resultSet[i].TK_XH ==null || json.resultSet[i].TK_XH.length<=0){
+												_$Val("XH","1");
+											}else{
+												_$Val("XH",_$ParseInt(json.resultSet[i].TK_XH)+1);
+											}
+											//_$TriggerComputeField("YQK_JE");
+										}
+									}
+								});
+						}
+					]]>
+				</event>
+				<event type="beforeSave">
+				
+				</event>
+			</events>
+			<javascripts>
+				<javascript src="/app/js/qxkz.js"/>
+				<javascript src="/app/js/oz-dyna-help.js"/>
+			</javascripts>
+			<csss>
+				<css src="/app/css/oz-dyna-help.css" />
+				<css>
+					<![CDATA[
+					
+					]]>
+				</css>
+			</csss>
+			<documentation>
+				合同财务条款信息表单
+			</documentation>
+		</form>
+		
+		<form formType="dlgForm" id="form4FmHtsjsk" name="合同实际收款信息" tableRef="OZ_UD_FM_HTSJSK" >
+			<body>
+				<table cellpadding="0" cellspacing="0" class="oz-form-bordertable" >
+					<tr class="oz-form-emptyTR">
+						<td width="25%"></td>
+						<td width="25%"></td>
+						<td width="30%"></td>
+						<td width="20%"></td>		
+					</tr>
+					<tr>
+						<td colspan="4"></td>
+					</tr>
+					<tr>
+						<td class="oz-form-label-c">收款次数：</td>
+						<td class="oz-property">
+							<input id="SKCS" readonly="true" style="width:50px">
+								<displayMode triggerBy="observe,onload" default="1">
+								</displayMode>
+							</input>
+						</td>
+						<td class="oz-form-label-c">收款日期：</td>
+						<td class="oz-property">
+							<input id="SKRQ"  notNull="true">
+								<displayMode triggerBy="observe,onload" default="1">
+								</displayMode>
+							</input>
+						</td>
+					</tr>
+					<tr>
+						<td class="oz-form-label-c">收款金额：</td>
+						<td class="oz-property">
+							<input id="SKJE"  notNull="true">
+								<displayMode triggerBy="observe,onload" default="1">
+								</displayMode>
+							</input>
+						</td>
+						<td class="oz-form-label-c">
+							<![CDATA[
+								是否已申<br>请开发票：
+							]]>
+						</td>
+						<td>
+							<radio id="YSQFP" value="Y" name="是">
+								<displayMode triggerBy="observe,onload" default="1">
+									<![CDATA[
+										if(isZyqSkxxAdmin()){
+											return 2;
+										}
+										return 1;
+									]]>
+								</displayMode>
+							</radio>
+							<radio id="YSQFP" value="N" name="否">
+								<displayMode triggerBy="observe,onload" default="1">
+									<![CDATA[
+										if(isZyqSkxxAdmin()){
+											return 2;
+										}
+										return 1;
+									]]>
+								</displayMode>
+							</radio>
+						</td>
+					</tr>
+					<tr>
+						<td class="oz-form-label-c">
+							<![CDATA[
+							是否已开<br>发票：
+							]]>
+						</td>
+						<td>
+							<radio id="YKFP" value="Y" name="是">
+								<displayMode triggerBy="observe,onload" default="1">
+									<![CDATA[
+										if(isZyqSkxxAdmin()){
+											return 2;
+										}
+										return 1;
+									]]>
+								</displayMode>
+							</radio>
+							<radio id="YKFP" value="N" name="否">
+								<displayMode triggerBy="observe,onload" default="1">
+									<![CDATA[
+										if(isZyqSkxxAdmin()){
+											return 2;
+										}
+										return 1;
+									]]>
+								</displayMode>
+							</radio>
+						</td>
+						<td class="oz-form-label-c">
+							<![CDATA[
+								是否已完<br>成收款：
+							]]>
+						</td>
+						<td>
+							<radio id="SKWC" value="Y" name="是">
+								<displayMode triggerBy="observe,onload" default="1">
+									<![CDATA[
+										if(isZyqSkxxAdmin()){
+											return 2;
+										}
+										return 1;
+									]]>
+								</displayMode>
+							</radio>
+							<radio id="SKWC" value="N" name="否">
+								<displayMode triggerBy="observe,onload" default="1">
+									<![CDATA[
+										if(isZyqSkxxAdmin()){
+											return 2;
+										}
+										return 1;
+									]]>
+								</displayMode>
+							</radio>
+						</td>
+					</tr>
+					<tr>
+						<td class="oz-form-label-c">录入人：</td>
+						<td>
+							<input id="LRR" readonly="true">
+								<displayMode triggerBy="observe,onload" default="1">
+								</displayMode>
+							</input>
+						</td>
+						<td class="oz-form-label-c">录入日期：</td>
+						<td>
+							<input id="LRRQ" readonly="true">
+								<displayMode triggerBy="observe,onload" default="1">
+								</displayMode>
+							</input>
+						</td>
+					</tr>
+					<tr>
+						<td class="oz-form-label-c">备注：</td>
+						<td class="oz-property" colspan="3">
+							<input id="SKBZ" >
+								<displayMode triggerBy="observe,onload" default="1">
+								</displayMode>
+							</input>
+						</td>
+					</tr>
+				</table>
+				<hiddenFields>
+					<input id="ID"/>
+					<input id="HT_ID"/>
+					<input id="LRR"/>
+					<input id="LRR_ID"/>
+					<input id="LRRQ"/>
+				</hiddenFields>
+			</body>
+			
+			<events>
+				<event type="load">
+					<![CDATA[
+						var skcs = _$Val("SKCS");
+						if(skcs == null || skcs.length<=0){
+							_$ExecuteSQL("ds4FmSelectHtsjskcs",{HT_ID:_$Val("HT_ID")}, function(json){
+									if(json.resultCount == 0){
+										//alert("执行影响到的行数为0");
+										_$Val("SKCS","1");
+									}else{
+										for(var i = 0; i < json.resultSet.length; i++){
+											//alert(json.resultSet[i].SK_CS);
+											if(json.resultSet[i].SK_CS ==null || json.resultSet[i].SK_CS.length<=0){
+												_$Val("SKCS","1");
+											}else{
+												_$Val("SKCS",_$ParseInt(json.resultSet[i].SK_CS)+1);
+											}
+											//_$TriggerComputeField("YQK_JE");
+										}
+									}
+								});
+						}
+					]]>
+				</event>
+				<event type="beforeSave">
+				
+				</event>
+			</events>
+			<javascripts>
+				<javascript src="/app/js/qxkz.js"/>
+				<javascript src="/app/js/oz-dyna-help.js"/>
+			</javascripts>
+			<csss>
+				<css src="/app/css/oz-dyna-help.css" />
+				<css>
+					<![CDATA[
+					
+					]]>
+				</css>
+			</csss>
+			<documentation>
+				合同实际收款信息表单
+			</documentation>
+		</form>
+		
+		<form formType="dlgForm" id="form4FmHtsjfk" name="合同实际付款信息" tableRef="OZ_UD_FM_HTSJFK"  formHeight="320">
+			<body>
+				<table cellpadding="0" cellspacing="0" class="oz-form-bordertable" >
+					<tr class="oz-form-emptyTR">
+						<td width="20%"></td>
+						<td width="30%"></td>
+						<td width="20%"></td>
+						<td width="40%"></td>		
+					</tr>
+					<tr>
+						<td colspan="4" style="font-size:12px;color:#195775;text-align:center;font-weight:bold;">手工录入合同付款信息</td>
+					</tr>
+					<tr>
+						<td class="oz-form-label-c">付款次数：</td>
+						<td class="oz-property" colspan="3">
+							<input id="FKXH" readonly="true" style="width:50px">
+								<displayMode triggerBy="observe,onload" default="1">
+									<![CDATA[
+										if(isZyqSkxxAdmin()){
+											return 2;
+										}
+										return 1;
+									]]>
+								</displayMode>
+							</input>
+						</td>
+					</tr>
+					<tr>
+						<td class="oz-form-label-c">付款日期：</td>
+						<td class="oz-property">
+							<input id="FKRQ"  notNull="true">
+								<displayMode triggerBy="observe,onload" default="1">
+									<![CDATA[
+										if(isZyqSkxxAdmin()){
+											return 2;
+										}
+										return 1;
+									]]>
+								</displayMode>
+							</input>
+						</td>
+						<td class="oz-form-label-c">付款金额：</td>
+						<td class="oz-property">
+							<input id="FKJE"  notNull="true">
+								<displayMode triggerBy="observe,onload" default="1">
+									<![CDATA[
+										if(isZyqSkxxAdmin()){
+											return 2;
+										}
+										return 1;
+									]]>
+								</displayMode>
+							</input>
+						</td>
+					</tr>
+					<tr>
+						<td class="oz-form-label-c">
+							<![CDATA[
+								是否属于<br>预付款：
+							]]>
+						</td>
+						<td>
+							<radio id="SPWC" value="Y" name="是">
+								<displayMode triggerBy="observe,onload" default="1">
+									<![CDATA[
+										if(isZyqSkxxAdmin()){
+											return 2;
+										}
+										return 1;
+									]]>
+								</displayMode>
+							</radio>
+							<radio id="SPWC" value="N" name="否">
+								<displayMode triggerBy="observe,onload" default="1">
+									<![CDATA[
+										if(isZyqSkxxAdmin()){
+											return 2;
+										}
+										return 1;
+									]]>
+								</displayMode>
+							</radio>
+						</td>
+						<td class="oz-form-label-c">
+							<![CDATA[
+							 发票到账<br>情况：
+							]]>
+						</td>
+						<td>
+							<radio id="FKWC" value="Y" name="是">
+								<displayMode triggerBy="observe,onload" default="1">
+									<![CDATA[
+										if(isZyqSkxxAdmin()){
+											return 2;
+										}
+										return 1;
+									]]>
+								</displayMode>
+							</radio>
+							<radio id="FKWC" value="N" name="否">
+								<displayMode triggerBy="observe,onload" default="1">
+									<![CDATA[
+										if(isZyqSkxxAdmin()){
+											return 2;
+										}
+										return 1;
+									]]>
+								</displayMode>
+							</radio>
+						</td>
+					</tr>
+				</table>
+				<hiddenFields>
+					<input id="ID"/>
+					<input id="HT_ID"/>
+					<input id="SQD_ID"/>
+					<input id="SQD_BH"/>
+					<input id="SQD_DOCTYPE"/>
+				</hiddenFields>
+			</body>
+			<events>
+				<event type="load">
+					<![CDATA[
+						var spwc = _$Val("SPWC");
+						var fkwc = _$Val("FKWC");
+						if(spwc == null || spwc == "" || spwc.length<0){
+							_$Val("SPWC","N");
+						}
+						if(fkwc == null || fkwc == "" || fkwc.length<0){
+							_$Val("FKWC","N");
+						}
+						var fkxh = _$Val("FKXH");
+						if(fkxh == null || fkxh == "" || fkxh.length<0){
+							var json = _$ExecuteSQL("ds4FmSelectHtsjfkcs",{HT_ID:_$Val("HT_ID")});
+							if(json.resultCount == 0){
+								//alert("执行影响到的行数为0");
+								_$Val("FKXH","1");
+							}else{
+								for(var i = 0; i < json.resultSet.length; i++){
+									//alert(json.resultSet[i].FKXH);
+									if(json.resultSet[i].FKXH ==null || json.resultSet[i].FKXH.length<=0){
+										_$Val("FKXH","1");
+									}else{
+										_$Val("FKXH",_$ParseInt(json.resultSet[i].FKXH)+1);
+									}
+								}
+							}
+						}
+						var sqdType = _$Val("SQD_DOCTYPE");
+						if(sqdType==null || sqdType == "" || sqdType.length<0){
+							_$Val("SQD_DOCTYPE","FM_SGLV");
+						}
+					]]>
+				</event>
+			</events>
+			<javascripts>
+				<javascript src="/app/js/qxkz.js"/>
+				<javascript src="/app/js/oz-dyna-help.js"/>
+			</javascripts>
+			<csss>
+				<css src="/app/css/oz-dyna-help.css" />
+				<css>
+					<![CDATA[
+					
+					]]>
+				</css>
+			</csss>
+			<documentation>
+				合同实际付款信息表单
+			</documentation>
+		</form>
+	</forms>	
+</definitions>

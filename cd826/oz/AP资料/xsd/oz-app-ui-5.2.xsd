@@ -1,0 +1,1795 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	xmlns="http://www.gem-soft.com/schema/app-ui" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.gem-soft.com/schema/app-ui" 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified">
+
+	<xsd:annotation>
+		<xsd:documentation><![CDATA[
+			OZ AP's(Agile Application) application definition schema, version 5.2
+			Authors: CD826
+			
+			Defines the elements used in the OZ AP's ui definition.
+		]]></xsd:documentation>
+	</xsd:annotation>
+
+	<!-- OzAP/UI顶级标签: <definitions> -->
+	<xsd:element name="definitions">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ应用平台中UI定义的根元素，在该元素内可以定义一个或多个UI定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="documentation" minOccurs="0"></xsd:element>
+				<xsd:choice minOccurs="0" maxOccurs="unbounded">
+					<xsd:element name="trees" type="treesType"/>
+					<xsd:element name="views" type="viewsType"/>
+					<xsd:element name="forms" type="formsType"/>
+					<xsd:element name="csss" type="csssType"/>
+					<xsd:element name="javascripts" type="javascriptsType"/>
+					<xsd:element name="scripts" type="scriptsType"/>
+				</xsd:choice>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="documentation">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[ 
+				Contains informative text describing the purpose of the enclosing element.
+				Used primarily for user documentation of XML bean definition documents.
+  			]]></xsd:documentation>
+  		</xsd:annotation>
+		<xsd:complexType mixed="true">
+  			<xsd:choice minOccurs="0" maxOccurs="unbounded" /> 
+  		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="html">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[ 
+				UI定义文件中直接所使用的Html代码
+  			]]></xsd:documentation>
+  		</xsd:annotation>
+		<xsd:complexType mixed="true">
+  			<xsd:choice minOccurs="0" maxOccurs="unbounded" /> 
+  		</xsd:complexType>
+	</xsd:element>
+	
+	<!-- ========================================================================================================== -->
+	<!-- Tree声明 -->
+	<!-- ========================================================================================================== -->
+	<xsd:complexType name="treesType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用中树形控件定义
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">					
+				<xsd:element name="tree" type="treeType"/>
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="treeType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用中树声明.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="documentation" minOccurs="0"></xsd:element>
+			<xsd:choice minOccurs="1" maxOccurs="unbounded">					
+				<xsd:element name="node" type="nodeType"/>
+				<xsd:element name="event" type="nodeClickEventType"/>
+			</xsd:choice>
+		</xsd:sequence>
+		<xsd:attribute name="id" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					声明该Tree的id，该id在整个项目中必须是唯一.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="name" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选]该Tree的名称.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="root" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选]该Tree根节点名称，如果不设置则不显示根节点.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="checkable" type="xsd:boolean" use="optional" default="false">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 该Tree是否显示复选框，默认值为false，即不显示.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="extendArgs" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选] 系统查询生成树时扩展参数，注意该属性暂时无效;
+					2. 声明格式为：paramName=paramValue;paramName=paramValue;
+					3. 参数的值支持表达式，但必须使用#{}包含相应的表达式，如：#{curUserInfo.name};
+					4. 表达式有以下内置的对象可以供求值：
+					   1)sysdate: 系统当前日期, 格式为：yyyy-MM-dd;
+					   2)sysdatetime: 系统当前时间, 格式为：yyyy-MM-dd HH:mm:ss;
+					   3)curUser: 系统当前用户信息, 可以通过.的方式获取相应属性值, 如#{curUser.name};
+					   4)curUserInfo: 系统当前人员信息, 可以通过.的方式获取相应属性值, 如#{curUserInfo.name}.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="handlerClazz" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选] 系统查询生成树时所使用的类名称，注意该属性暂时无效;
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="tableRef" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选] 该树相应的表的id;
+					2. 如果没有定义那么系统默认采用该Tree所属Applicaion的第一个master类型的表.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="datasetRef" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选] 该树相应的数据集定义;
+					2. 如果没有定义那么系统将根据所属表进行构建.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="where" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选] 系统查询生成树时扩展参数;
+					2. 声明格式为：columnId=:columnId and columnId1=:columnId1.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	<xsd:complexType name="nodeType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用中树节点声明.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="documentation" minOccurs="0"></xsd:element>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">					
+				<xsd:element name="node" type="nodeType"/>
+			</xsd:choice>
+		</xsd:sequence>
+		<xsd:attribute name="columnId" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					该节点相应数据库字段的id.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="order" use="optional" default="asc">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 节点中值的排序方式.
+				]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="ase"/>
+					<xsd:enumeration value="desc"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="showWhenNull" type="xsd:boolean" use="optional" default="true">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 当值为空时是否显示，默认值为true，即显示，那么显示的值为blank属性定义的值.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="blank" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 当节点的值为空时显示的值.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<!-- ========================================================================================================== -->
+	<!-- View声明 -->
+	<!-- ========================================================================================================== -->
+	<xsd:complexType name="viewsType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用中视图定义
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">					
+				<xsd:element name="view" type="viewType"/>
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="viewType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用中视图声明.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="documentation" minOccurs="0"></xsd:element>
+			<xsd:element name="toolbar" type="toolbarType" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="search" type="searchType" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="naviTree" type="naviTreeType" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="grid" type="gridType" minOccurs="1" maxOccurs="1"/>
+			<xsd:element name="events" type="eventsType" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="csss" type="csssType" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="javascripts" type="javascriptsType" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="scripts" type="scriptsType" minOccurs="0" maxOccurs="1"/>
+			<xsd:element ref="html" minOccurs="0" maxOccurs="1"></xsd:element>
+		</xsd:sequence>
+		
+		<xsd:attribute name="id" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					声明该视图的id，该id在整个项目中必须是唯一.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="name" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选]该视图的名称.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="type" use="required" default="normal">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选] 视图类型;
+					2. 默认值为:normal, 即普通视图;
+					3. 可选的视图类型有以下几种：
+					   1) normal: 普通视图，即大部分视图都是该种视图;
+					   2) subView：子视图，当视图需要出现在表单的页签中时，一般使用该种类型;
+					   3) editableView: 可编辑表格视图，当需要在表格中直接进行编辑时采用这种类型，但注意该表格的可编辑性现在比较不稳定，请少用;
+					   4) dlgView: 对话框视图，主要用于列表选择;
+					   5) calendar: 日历视图，暂时没有开发完成该种类型的视图.
+				]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="normal"/>
+					<xsd:enumeration value="subView"/>
+					<xsd:enumeration value="editableView"/>
+					<xsd:enumeration value="dlgView"/>
+					<xsd:enumeration value="calendar"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="extendArgs" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选] 视图进行数据查询时的扩展参数;
+					2. 格式为：fieldId=paramValue;fieldId11=paramValue1;
+					3. 当paramValue以_开头时测试从request中获取参数的值.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="where" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 视图进行数据查询时的扩展筛选语句，如：YSGS_ID IS NOT NULL.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="handlerClazz" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 视图进行数据查询时处理类，此属性暂时不起作用.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="tableRef" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 视图默认相应的数据库表定义，如果没有指定则取该视图所属应用的第一个Table定义.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="datasetRef" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 视图数据默认使用数据集的id，如果没有指定则根据该视图所属表自动构建.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="defaultFormRef" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 视图中数据默认相关的表单定义id，如果没有定义在使用所属应用第一个表单定义.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<xsd:complexType name="searchType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用中工具条搜索功能声明.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="field" type="tbSearchFieldType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+		
+		<xsd:attribute name="type" use="required" default="none">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 搜索显示的方式.
+				]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="none"/>
+					<xsd:enumeration value="normal"/>
+					<xsd:enumeration value="advance"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+	<xsd:complexType name="tbSearchFieldType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用中工具条中高级搜索所进行搜索的字段声明.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:attribute name="fileId" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					相应table中字段的id.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<!-- ========================================================================================================== -->
+	<!-- Navi Tree声明 -->
+	<!-- ========================================================================================================== -->
+	<xsd:complexType name="naviTreeType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 视图中导航树声明.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="tree" type="treeType" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="nodemap" type="nodemapType" minOccurs="0" maxOccurs="unbounded"/>
+			<xsd:element name="event" type="nodeClickEventType" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+		<xsd:attribute name="treeRef" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 导航树所引用前面所定义树的id，如果这个没有定义可以直接使用tree子元素进行定义.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	<xsd:complexType name="nodemapType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 导航树中节点字段映射.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:attribute name="columnId" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 按字段的id配置映射.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="level" type="xsd:int" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 按级别配置映射.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="mapColumnId" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					映射到的字段id.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<!-- ========================================================================================================== -->
+	<!-- Grid声明 -->
+	<!-- ========================================================================================================== -->
+	<xsd:complexType name="gridType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用中视图中表格的声明.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="documentation" minOccurs="0"></xsd:element>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">					
+				<xsd:element name="column" type="gridColumnType"/>
+				<xsd:element name="event" type="gridEventType"/>
+			</xsd:choice>
+		</xsd:sequence>
+		<xsd:attribute name="id" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 视图中Grid的id，如果没有设置那么默认值为: ozGrid.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="selectMode" use="optional" default="checkbox">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 视图表格的选择方式，默认值为:checkbox, 即复选。
+				]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="checkbox"/>
+					<xsd:enumeration value="radio"/>
+					<xsd:enumeration value="none"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="pagination" type="xsd:boolean" use="optional" default="true">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 视图表格是否需要分页，默认值为:true，即需要分页.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="export" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 视图表格的导出方式，没有默认值, 也即不需要导出。
+				]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="excel"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="defaultSortField" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 视图中Grid中数据缺省的排序字段.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="defaultSortDir" use="optional" default="asc">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 视图Grid数据排序方式，默认值为:asc, 即升序.
+				]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="asc"/>
+					<xsd:enumeration value="desc"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+	<xsd:complexType name="gridColumnType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP Grid中的具体列声明.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="columnRender" type="columnRenderType" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="editor" type="columnEditorType" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+		<xsd:attribute name="field" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					列所显示的字段的id，id的值必须和数据库表中相应字段的id一致.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="title" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 列所显示标题，如果没有配置则从相应DM配置中获取.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="width" type="xsd:int" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					Grid中列的宽度.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="align" use="optional" default="left">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 列文字对齐方式，默认值为:left, 即左对齐.
+				]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="left"/>
+					<xsd:enumeration value="center"/>
+					<xsd:enumeration value="right"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="sortable" type="xsd:boolean" use="optional" default="true">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 列是否可以进行排序，默认值为true，即可以排序.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="renderFn" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选] 列渲染函数，默认可以选择的有apDefaultFormatter;
+					2. 如果需要自定义列渲染的方式请在columnRender节点中实现相应的渲染方法，列渲染函数有三个参数：
+					   1) 第一个参数：value即该列的初始值;
+					   2) 第二个参数：rowData即该列所在行的数据，可以通过rowData.{column.id}来获取相应的值；
+					   3) 第三个参数rowIndex是指该行的顺序号。
+					   需要注意的是这三个参数名称是不能修改的。样例如下：						
+							if(value == 10)				// 这里value表示车辆状态的值
+								return "使用中";
+							if(value == 20)
+								return "维修中";
+							return "未知状态(" + value + ")";.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="editorType" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选] 列编辑器的类型，无默认值;
+					2. 只有在视图的类型为:editableView时，该属性才有效;
+					3. 可选的编辑器类型有：text(文本)/numberbox(数字输入框)/combobox(下拉选择框)/datebox(日期输入框)/combotree(下拉选择树);
+					4. 只有text/datebox可以在editorType中直接声明，而其它的几个必须借助editor子节点来完成，它们分别声明格式如下：
+					   1) numberbox的声明格式：type:'numberbox',options:{required:true,precision:2};
+					   2) combobox的声明格式：type:'combobox', options:{valueField:'value', textField:'name', url:'', required:true};
+					   3) combotree的声明格式：type:'ozCombotree', options:{url:'', required:true}.
+				]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="text"/>
+					<xsd:enumeration value="datebox"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+    <xsd:complexType name="columnRenderType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 列渲染代码.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType mixed="true">
+  			<xsd:choice minOccurs="0" maxOccurs="unbounded" /> 
+  		</xsd:complexType>
+	</xsd:complexType>
+	<xsd:complexType name="columnEditorType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 列编辑器代码.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType mixed="true">
+  			<xsd:choice minOccurs="0" maxOccurs="unbounded" /> 
+  		</xsd:complexType>
+	</xsd:complexType>
+	<xsd:complexType name="gridEventType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP Grid事件处理.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType mixed="true">
+  			<xsd:choice minOccurs="0" maxOccurs="unbounded" /> 
+  		</xsd:complexType>
+		<xsd:attribute name="type" use="required" default="rowDblClick">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. 事件类型;
+					2. 对于可编辑表格还有下面一些事件可以进行编写，不过不用声明event，可以直接在javascript中复写，它们是：
+					   1) onBeforeEdit(index, row) -- 在行进入编辑之前;
+					   2) onAfterEdit(index, row) -- 在行编辑之后;
+					   3) onCancelEdit(index, row) -- 在取消编辑时;
+					   4) onRowDblClick(index, row) -- 在行双击时; 
+					   5) onAfterDataLoad(data) -- 在可编辑表格加载完数据后;
+					   6) onAfterRowConfirm(index) -- 当用户确认一行的输入后;
+					   7) onGetGridChangeDatas() -- 在获取本次所更改的数据时.
+			   ]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="rowDblClick"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="handleFn" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选] 事件处理函数，默认可以选择的有：
+					   1) apDefaultRowDblClick: 该函数将默认打开相应的记录，使用所设定的表单;
+					   2) apNoopRowDblClick: 该函数将默认什么都不做.
+					2. 如果需要自定义列渲染的方式请在该节点中实现相应的处理方法，事件处理函数有三个参数：
+					   1) 第一个参数：rowIndex是指该行的顺序号;
+					   2) 第二个参数：rowData即该列所在行的数据，可以通过rowData.{column.id}来获取相应的值；
+					   3) 第三个参数：data是指表示该行数据的类型，用于多窗口之间的数据传递.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>		
+	
+	<!-- ========================================================================================================== -->
+	<!-- Form 声明 -->
+	<!-- ========================================================================================================== -->
+	<xsd:complexType name="formsType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用中表单定义
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">					
+				<xsd:element name="form" type="formType"/>
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="formType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用中表单定义
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="documentation" minOccurs="0"></xsd:element>
+			<xsd:element name="toolbar" type="toolbarType" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="body" type="formBodyType" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="events" type="eventsType" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="csss" type="csssType" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="javascripts" type="javascriptsType" minOccurs="0" maxOccurs="1"/>
+			<xsd:element name="scripts" type="scriptsType" minOccurs="0" maxOccurs="1"/>			
+		</xsd:sequence>
+		<xsd:attribute name="id" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					声明该表单的id，该id在整个项目中必须是唯一.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="name" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选]该表单的名称.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="formType" use="required" default="form">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. 表单类型;
+					2. 默认值为:form, 即普通表单;
+					3. 可选的表单类型有以下几种：
+					   1) form: 普通表单，即大部分表单都是该种表单;
+					   2) processForm：流程表单，即该表单在处理过程中需要与流程引擎结合;
+					   3) dlgForm: 弹出表单，即通常所谓的对话框表单;
+					   4) formEngine: 使用表单引擎中所定义的表单，备注：该种表单类型暂时未开发完成.
+				]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="form"/>
+					<xsd:enumeration value="processForm"/>
+					<xsd:enumeration value="dlgForm"/>
+					<xsd:enumeration value="formEngine"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="controllerType" use="required" default="self">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. 表单控制方式，即如何控制表单中按钮、字段的显示、可编辑性等;
+					2. 默认值为:self, 即通过手工编写控制代码的方式进行处理;
+					3. 可选的控制方式有以下几种：
+					   1) self: 手工通过编写控制代码的方式进行控制;
+					   2) documentCfg：通过在文种配置中进行实现，此时表单类型必须是processForm才可以.
+				]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="self"/>
+					<xsd:enumeration value="documentCfg"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="handlerClazz" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 表单处理类，此属性暂时不起作用.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="tableRef" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 该表单相应的数据库表定义.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="file" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 表单相应的jsp文件路径，如果配置了该属性则系统不会自动生成jsp.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="formWidth" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 该表单宽度，只有当表单类型为dlgForm时该属性才有作用.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="formHeight" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 该表单高度，只有当表单类型为dlgForm时该属性才有作用.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="ukeySupported" type="xsd:boolean" use="optional" default="false">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 在该表单处理过程中是否需要UKey的支持，默认值为false，即不需要.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="dynaHelpSupported" type="xsd:boolean" use="optional" default="false">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 在该表单中的字段中是否支持动态帮助信息的加载，默认值为false，即不支持.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+		<xsd:complexType name="formBodyType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用中表单体
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:element name="table" type="formTableType"/>
+				<xsd:element name="formTabs" type="formTabsType"/>
+				<xsd:element name="hiddenFields" type="hiddenFieldsType"/>				
+			</xsd:choice>
+			<xsd:element ref="html" minOccurs="0" maxOccurs="1"></xsd:element>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="formTabsType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 表单中多页签控件定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="formElementType">
+				<xsd:choice minOccurs="0" maxOccurs="unbounded">
+					<xsd:element name="formTab" type="formTabType"/>
+				</xsd:choice>
+			</xsd:extension>
+		</xsd:complexContent>
+		<xsd:attribute name="height" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 页签的高度.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	<xsd:complexType name="formTabType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 表单中页签控件定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="formElementType">
+				<xsd:choice minOccurs="0" maxOccurs="unbounded">
+					
+				</xsd:choice>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<xsd:complexType name="formElementType" abstract="true">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 表单中控件定义基类.
+			]]></xsd:documentation>
+		</xsd:annotation>		
+		<xsd:attribute name="class" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 控件的样式类名称.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="style" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 控件的样式.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:anyAttribute/>
+	</xsd:complexType>
+	
+	<xsd:complexType name="formTableType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 表单中Table控件定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="formElementType">
+				<xsd:choice minOccurs="0" maxOccurs="unbounded">
+					<xsd:element name="tr" type="formTRType"/>
+				</xsd:choice>
+				<xsd:attribute name="id" type="xsd:string" use="optional"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="formTRType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 表单中TR控件定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="formElementType">
+				<xsd:choice minOccurs="0" maxOccurs="unbounded">
+					<xsd:element name="td" type="formTDType"/>
+				</xsd:choice>
+				<xsd:attribute name="id" type="xsd:string" use="optional"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="formTDType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 表单中TD控件定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="formElementType">
+				<xsd:choice minOccurs="0" maxOccurs="unbounded">
+					<xsd:element name="table" type="formTableType"/>
+					<xsd:element name="div" type="formDIVType"/>
+					<xsd:element name="span" type="formSpanType"/>
+					<xsd:element name="input" type="formInputType"/>
+					<xsd:element name="linkselect" type="formLinkSelectType"/>
+					<xsd:element name="radio" type="formRadioType"/>
+					<xsd:element name="select" type="formSelectType"/>
+					<xsd:element name="button" type="formButtonType"/>
+					<xsd:element name="iframe" type="formIFrameType"/>
+					<xsd:element name="jsp" type="formIncludeJspType"/>
+					<xsd:element name="attachment" type="formAttachmentType"/>
+					<xsd:element name="computedField" type="formComputedFieldType"/>
+					<xsd:element name="computedText" type="formComputedTextType"/>
+					<xsd:element name="currencyField" type="formCurrencyFieldType"/>
+				</xsd:choice>
+				<xsd:attribute name="id" type="xsd:string" use="optional"/>
+				<xsd:attribute name="width" type="xsd:string" use="optional"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<xsd:complexType name="formUIControlType" abstract="true">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 表单中控件定义基类.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="formElementType">
+				<xsd:sequence>
+					<xsd:choice minOccurs="0" maxOccurs="unbounded">
+						<xsd:element name="event" type="eventType"/>
+					</xsd:choice>
+				</xsd:sequence>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>	
+	<xsd:complexType name="hiddenFieldsType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 表单中隐藏字段定义区域.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="input" type="hiddenFieldType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="hiddenFieldType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 表单中隐藏字段定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:attribute name="fileId" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					字段的ID.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<!-- ========================================================================================================== -->
+	<!-- 具体Form中可保护的表单元素声明 -->
+	<!-- ========================================================================================================== -->
+	<xsd:complexType name="formDIVType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 表单中Div控件定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="formUIControlType">
+				<xsd:choice minOccurs="0" maxOccurs="unbounded">
+					<xsd:element name="span" type="formSpanType"/>
+					<xsd:element name="input" type="formInputType"/>
+					<xsd:element name="linkselect" type="formLinkSelectType"/>
+					<xsd:element name="radio" type="formRadioType"/>
+					<xsd:element name="select" type="formSelectType"/>
+					<xsd:element name="button" type="formButtonType"/>
+					<xsd:element name="iframe" type="formIFrameType"/>
+					<xsd:element name="jsp" type="formIncludeJspType"/>
+					<xsd:element name="attachment" type="formAttachmentType"/>
+					<xsd:element name="computedField" type="formComputedFieldType"/>
+					<xsd:element name="computedText" type="formComputedTextType"/>
+					<xsd:element name="currencyField" type="formCurrencyFieldType"/>
+					<xsd:element name="displayMode" type="formElementDisplayModeType"/>
+				</xsd:choice>
+				<xsd:attribute name="id" type="xsd:string" use="optional"/>
+				<xsd:attribute name="text" type="xsd:string" use="optional"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="formSpanType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 表单中Span控件定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="formUIControlType">
+				<xsd:choice minOccurs="0" maxOccurs="unbounded">
+					<xsd:element name="div" type="formDIVType"/>
+					<xsd:element name="input" type="formInputType"/>
+					<xsd:element name="linkselect" type="formLinkSelectType"/>
+					<xsd:element name="radio" type="formRadioType"/>
+					<xsd:element name="select" type="formSelectType"/>
+					<xsd:element name="button" type="formButtonType"/>
+					<xsd:element name="iframe" type="formIFrameType"/>
+					<xsd:element name="jsp" type="formIncludeJspType"/>
+					<xsd:element name="attachment" type="formAttachmentType"/>
+					<xsd:element name="computedField" type="formComputedFieldType"/>
+					<xsd:element name="computedText" type="formComputedTextType"/>
+					<xsd:element name="currencyField" type="formCurrencyFieldType"/>
+					<xsd:element name="displayMode" type="formElementDisplayModeType"/>
+				</xsd:choice>
+				<xsd:attribute name="id" type="xsd:string" use="optional"/>
+				<xsd:attribute name="text" type="xsd:string" use="optional"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="formIncludeJspType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 表单中引入外部JSP文件.
+			]]></xsd:documentation>
+		</xsd:annotation>		
+		<xsd:attribute name="src" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					JSP文件的路径,相对于根目录,如:/apDemo/SF_Demo.jsp.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<xsd:complexType name="formInputType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 表单中输入控件定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="formUIControlType">
+				<xsd:choice minOccurs="0" maxOccurs="1">
+					<xsd:element name="displayMode" type="formElementDisplayModeType"/>
+				</xsd:choice>
+				<xsd:attribute name="id" type="xsd:string" use="required"/>
+				<xsd:attribute name="notNull" type="xsd:boolean" use="optional" default="false"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="formLinkSelectType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 表单中联动下拉框控件定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="formUIControlType">
+				<xsd:choice minOccurs="0" maxOccurs="1">
+					<xsd:element name="displayMode" type="formElementDisplayModeType"/>
+				</xsd:choice>
+				<xsd:attribute name="id" type="xsd:string" use="required"/>
+				<xsd:attribute name="dataDict" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation><![CDATA[
+							[可选] 下拉框所显示内容在数据字典中的分类编码.
+						]]></xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="parentRef" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation><![CDATA[
+							[可选] 下拉框所父下拉框的id，即该下拉框随那个下拉框的变动而变动.
+						]]></xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="formRadioType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 表单中单选按钮控件定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="formUIControlType">
+				<xsd:choice minOccurs="0" maxOccurs="1">
+					<xsd:element name="displayMode" type="formElementDisplayModeType"/>
+				</xsd:choice>
+				<xsd:attribute name="id" type="xsd:string" use="required"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="formSelectType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 表单中下拉选择控件定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="formUIControlType">
+				<xsd:choice minOccurs="0" maxOccurs="unbounded">
+					<xsd:element name="displayMode" type="formElementDisplayModeType"/>
+					<xsd:element name="option" type="formSelectOptionType"/>
+				</xsd:choice>
+				<xsd:attribute name="id" type="xsd:string" use="required"/>
+				<xsd:attribute name="dataDict" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation><![CDATA[
+							[可选] 下拉框所显示内容在数据字典中的分类编码.
+						]]></xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="dsId" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation><![CDATA[
+							[可选] 下拉框所显示内容所属使用的数据集id.
+						]]></xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="formSelectOptionType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 下拉选择按钮中选项.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:attribute name="value" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					选项的值.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="name" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					选项的名称.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<xsd:complexType name="formButtonType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 表单中Button控件定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="formUIControlType">
+				<xsd:choice minOccurs="0" maxOccurs="1">
+					<xsd:element name="displayMode" type="formButtonDisplayModeType"/>
+				</xsd:choice>
+				<xsd:attribute name="id" type="xsd:string" use="optional"/>
+				<xsd:attribute name="name" type="xsd:string" use="required"/>
+				<xsd:attribute name="clickFn" type="xsd:string" use="optional"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="formIFrameType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 表单中IFrame控件定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="formUIControlType">
+				<xsd:attribute name="id" type="xsd:string" use="optional"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="formAttachmentType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 表单中附件控件定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="formUIControlType">
+				<xsd:attribute name="id" type="xsd:string" use="optional"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="formComputedFieldType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 表单中计算字段控件定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="formUIControlType">
+				<xsd:choice minOccurs="0" maxOccurs="unbounded">
+					<xsd:element name="value" type="computedValueType"/>
+					<xsd:element name="displayMode" type="formElementDisplayModeType"/>
+				</xsd:choice>
+				<xsd:attribute name="id" type="xsd:string" use="required"/>
+				<xsd:attribute name="triggerBy" use="required" default="observe">
+					<xsd:annotation>
+						<xsd:documentation><![CDATA[
+							可选的触发方式有以下几种;
+							1. observe: 监听方式，需要配置observeFields属性;
+							2. onload：加载时触发;
+							3. observe,onload：监听和加载时都触发.
+						]]></xsd:documentation>
+					</xsd:annotation>
+					<xsd:simpleType>
+						<xsd:restriction base="xsd:NMTOKEN">
+							<xsd:enumeration value="observe"/>
+							<xsd:enumeration value="onload"/>
+							<xsd:enumeration value="observe,onload"/>
+						</xsd:restriction>
+					</xsd:simpleType>
+				</xsd:attribute>
+				<xsd:attribute name="observeFields" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation><![CDATA[
+							[可选] 所要监控字段的ID，多个之间使用逗号分开，如：QTFY_ZHUSUFEI,QTFY_JIAOTONGFEI.
+						]]></xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="calcOrderNo" type="xsd:int" use="optional">
+					<xsd:annotation>
+						<xsd:documentation><![CDATA[
+							[可选] 计算的顺序号，用于控制计算顺序.
+						]]></xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="expression" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation><![CDATA[
+							[可选] 计算表达式，如果不使用该属性可以使用value节点.
+						]]></xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>				
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="formCurrencyFieldType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 表单中金额字段控件定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="formInputType">
+				<xsd:attribute name="prefix" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation><![CDATA[
+							[可选] 显示金额时的前缀,默认值为:￥
+						]]></xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="suffix" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation><![CDATA[
+							[可选] 显示金额时的后缀,无默认值
+						]]></xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="centsSeparator" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation><![CDATA[
+							[可选] 金额的分位分隔符,默认值为:.
+						]]></xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="thousandsSeparator" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation><![CDATA[
+							[可选] 金额的千位分隔符,默认值为:,
+						]]></xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="limit" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation><![CDATA[
+							[可选] 金额的总长度限制,包含分位,默认值为:false,即不限制
+						]]></xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="centsLimit" type="xsd:string" use="optional">
+					<xsd:annotation>
+						<xsd:documentation><![CDATA[
+							[可选] 金额的分位长度限制,默认值为:2
+						]]></xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="clearPrefix" type="xsd:boolean" use="optional">
+					<xsd:annotation>
+						<xsd:documentation><![CDATA[
+							[可选] 用户输入完成后是否清除前缀,默认为:false
+						]]></xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="clearSufix" type="xsd:boolean" use="optional">
+					<xsd:annotation>
+						<xsd:documentation><![CDATA[
+							[可选] 用户输入完成后是否清除后缀,默认为:false
+						]]></xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+				<xsd:attribute name="allowNegative" type="xsd:boolean" use="optional">
+					<xsd:annotation>
+						<xsd:documentation><![CDATA[
+							[可选] 金额是否可以为负数,默认为:false
+						]]></xsd:documentation>
+					</xsd:annotation>
+				</xsd:attribute>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="formComputedTextType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 表单中计算文本控件定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="formComputedFieldType">
+				<xsd:attribute name="id" type="xsd:string" use="optional"/>
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	<xsd:complexType name="formHtmlTextType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 表单中Html元素，系统仅输出该控件下的HTML 文本信息.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="formUIControlType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<xsd:element name="computedValueType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[ 
+				字段值的计算方法，一般为Javascript函数。返回计算得到的值.
+  			]]></xsd:documentation>
+  		</xsd:annotation>
+		<xsd:complexType mixed="true">
+  			<xsd:choice minOccurs="0" maxOccurs="unbounded"/> 
+  		</xsd:complexType>
+	</xsd:element>	
+	
+	<xsd:complexType name="formElementDisplayModeType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 表单中控件显示方式定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:attribute name="triggerBy" use="required" default="observe">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					可选的触发方式有以下几种;
+					1. observe: 监听方式，需要配置observeFields属性;
+					2. onload：加载时触发;
+					3. observe,onload：监听和加载时都触发.
+				]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="observe"/>
+					<xsd:enumeration value="onload"/>
+					<xsd:enumeration value="observe,onload"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="observeFields" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 所要监控字段的ID，多个之间使用逗号分开，如：QTFY_ZHUSUFEI,QTFY_JIAOTONGFEI.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="default" use="required" default="edit">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					可选的缺省值有以下几种;
+					1. hide: 隐藏字段;
+					2. readonly：字段显示但是只读;
+					3. edit：字段显示并且可以编辑;
+					3. print：可以打印该字段中的值.
+				]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="hide"/>
+					<xsd:enumeration value="readonly"/>
+					<xsd:enumeration value="edit"/>
+					<xsd:enumeration value="print"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+	<xsd:complexType name="formButtonDisplayModeType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 表单中控件显示方式定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:attribute name="triggerBy" use="required" default="observe">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					可选的触发方式有以下几种;
+					1. observe: 监听方式，需要配置observeFields属性;
+					2. onload：加载时触发;
+					3. observe,onload：监听和加载时都触发.
+				]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="observe"/>
+					<xsd:enumeration value="onload"/>
+					<xsd:enumeration value="observe,onload"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="observeFields" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 所要监控字段的ID，多个之间使用逗号分开，如：QTFY_ZHUSUFEI,QTFY_JIAOTONGFEI.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="default" use="required" default="dispaly">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					可选的缺省值有以下几种;
+					1. hide: 隐藏按钮;
+					2. dispaly：显示按钮.
+				]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="hide"/>
+					<xsd:enumeration value="dispaly"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	
+	<!-- ========================================================================================================== -->
+	<!-- Toolbar声明 -->
+	<!-- ========================================================================================================== -->
+	<xsd:complexType name="toolbarType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用中工具条声明.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:element name="seperator" type="tbSeperatorType"/>
+				<xsd:element name="button" type="tbButtonType"/>
+				<xsd:element name="dropdownButton" type="tbDropdownButtonType"/>
+			</xsd:choice>
+		</xsd:sequence>
+		
+		<xsd:attribute name="defaultToolbar" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 缺省工具条.
+				]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="view"/>
+					<xsd:enumeration value="editForm"/>
+					<xsd:enumeration value="readForm"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+	<xsd:complexType name="tbSeperatorType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用中工具条中的分割条.
+			]]></xsd:documentation>
+		</xsd:annotation>
+	</xsd:complexType>
+	<xsd:complexType name="tbButtonType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用中工具条中的按钮.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="event" type="eventType" minOccurs="0" maxOccurs="1"/>
+		</xsd:sequence>
+		<xsd:attribute name="id" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					按钮id.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="text" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					按钮显示名称.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="icon" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					按钮图标,一般值为：oz-icon-XXXX.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	<xsd:complexType name="tbDropdownButtonType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用中工具条中的下拉选择按钮.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="event" type="eventType" minOccurs="0" maxOccurs="1"/>
+			<xsd:choice minOccurs="1" maxOccurs="unbounded">
+				<xsd:element name="option" type="tbSelectOptionType"/>
+			</xsd:choice>
+		</xsd:sequence>
+		<xsd:attribute name="id" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					按钮id.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="text" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					按钮显示名称.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="icon" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					按钮图标,一般值为：oz-icon-XXXX.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="value" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					下拉选项按钮的值.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	<xsd:complexType name="tbSelectOptionType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用中工具条中的下拉选择按钮中选项.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:attribute name="value" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					选项的值.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="text" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					选项的名称.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+					
+	
+	<!-- ========================================================================================================== -->
+	<!-- 事件处理声明 -->
+	<!-- ========================================================================================================== -->	
+	<xsd:complexType name="eventsType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP UI中事件的定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="event" type="eventType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>	
+	<xsd:complexType name="eventType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用UI控件事件处理声明.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="documentation" minOccurs="0"></xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="type" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					事件类型.
+				]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="click"/>
+					<xsd:enumeration value="change"/>
+					<xsd:enumeration value="load"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="handleFn" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 事件处理函数，如果不声明该属性那么请在该节点中直接写JS代码.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>	
+	<xsd:complexType name="nodeClickEventType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				1. OZ AP 树节点点击事件处理声明;
+				2. 这里编写树的节点点击事件，系统会将此段代码置入树的单击事件中，如果没有定义系统则默认生成视图数据重新加载的代码;
+				3. 这里会有两个参数传入到该段代码
+					1) 第一个参数e，即事件处理本身；
+					2) 第二个参数node，即所点击的节点。
+				4. 当需要重新加载表格的数据时可以使用下面这个语句：
+					OZ.View.reloadGrid({classification:node.id, dbftsParams:""});
+					其中classification这个参数是默认参数，如果需要修改这个参数可以在请求的url中加入classParam这个参数来指示参数的名称，如:[pageUrl]&classParam=myClassification，
+					此时可以将请求语句修改为下面：
+					OZ.View.reloadGrid({myClassification:node.id, dbftsParams:""});
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="documentation" minOccurs="0"></xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="type" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					事件类型.
+				]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="nodeclick"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="handleFn" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 事件处理函数，如果不声明该属性那么请在该节点中直接写JS代码.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<!-- ========================================================================================================== -->
+	<!-- UI Resource定义声明 -->
+	<!-- ========================================================================================================== -->
+	<xsd:complexType name="uiResourceType" abstract="true">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP UIResource声明.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:attribute name="id" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] UI资源的id，设置id后可以被其它应用引用.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="src" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] UI文件的路径相对于应用的根目录.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="ref" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 所引用UIResource的id,可以跨应用来引用,只要id一致就可以.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<!-- ========================================================================================================== -->
+	<!-- 样式文件定义声明 -->
+	<!-- ========================================================================================================== -->	
+	<xsd:complexType name="csssType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP UI中样式文件的定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="css" type="cssType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="cssType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP UI中样式文件声明.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="uiResourceType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<!-- ========================================================================================================== -->
+	<!-- JavaScript文件声明 -->
+	<!-- ========================================================================================================== -->	
+	<xsd:complexType name="javascriptsType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP UI中JavaScript文件的定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="javascript" type="javascriptType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="javascriptType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP UI中JavaScript文件声明.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexContent>
+			<xsd:extension base="uiResourceType">
+			</xsd:extension>
+		</xsd:complexContent>
+	</xsd:complexType>
+	
+	<!-- ========================================================================================================== -->
+	<!-- 应用脚本定义文件声明 -->
+	<!-- ========================================================================================================== -->	
+	<xsd:complexType name="scriptsType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP UI中脚本文件的定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element name="script" type="scriptType" minOccurs="0" maxOccurs="unbounded"/>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="scriptType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP UI中脚本文件声明.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:attribute name="id" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 脚本资源的id，设置id后可以被其它应用引用.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="language" use="required" default="JavaScript">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					脚本语言类型.
+				]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="JavaScript"/>
+					<xsd:enumeration value="PHP"/>
+					<xsd:enumeration value="Ruby"/>
+					<xsd:enumeration value="Python"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="ref" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 所引用脚本资源的id,可以跨应用来引用,只要id一致就可以.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+</xsd:schema>  

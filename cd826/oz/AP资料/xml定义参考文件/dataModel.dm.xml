@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions version="1">
+	<dataModel>
+		<table id="tableId" name="[tableName]" docType="docType" type="master/child" classified="[工作事务的分类]" fileType="[工作事务的文件类别]" 
+			   generateView="[false/true]" defaultSortField="[ORDER_NO]" generateForm="[false/true]">
+			<!--
+				属性说明：
+					1)id: 				[必须] 该Table的Id，该Id对应数据库中具体表的Id，注意命名需要以OZ_UD_开头，UD表示用户自定义;
+					2)name:				[可选] 该Table的名称；
+					3)docType:			[必须] 该属性值必须在全系统内唯一，是用来区分一个数据所属的类型，如：OA_车辆管理_车辆信息；
+					4)type:				[必须] 可选的值有master/child，默认定义为master即主表，child为子表，定义子表时必须定义相应的主外键关联;
+					5)classified:		[可选] 只有需要将数据推送到统一事务时才需要定义该属性，该属性表示该事务在统一事务中的分类；
+					6)fileType:			[可选] 只有需要将数据推送到统一事务时才需要定义该属性，该属性表示该事务在统一事务中的文件类别；
+					7)generateView:		[可选] 定义是否生成一个默认的视图，可选的值有true/false，默认值为false即不生成;
+					8)defaultSortField:	[可选] 只有在generateView为true才有效，即生成的视图中默认数据排序方式;
+					9)generateForm:		[可选] 定义是否生成一个默认的表单，可选的值有true/false，默认值为false即不生成。
+				
+				范例：
+					<table id="OZ_UD_CARINFO" name="车辆信息管理" docType="OA_车辆管理_车辆信息" type="master">
+			-->
+			<columns>
+				<!-- 下面这一行是必须的，其中id的值也是不能够修改的。定义时请直接复制即可 -->
+				<column id="ID" name="id" comment="主键" isPrimaryKey="true"/>
+				<column id="columnId" name="columnName" comment="[comment for column]" 
+						dataType="[string/int/long/double/date/time/datetime/text]" length="[255]" precision="[2]"
+						notNull="[false/true]" defaultValue="[#{curUserInfo.name}]"
+						isPrimaryKey="[false/true]" isForeignKey="[false/true]"
+						titleColumn="[false/true]"
+						workEntityMapping="[subject/author/authorId/fileDate/workId/description]"
+						viewColumn="[false/true]" columnWidth="[80]" 
+						formField="[false/true]" height="[80]" size="[1]" multiple="[false/true]"
+						searchable="[false/true]">
+					<documentation>
+						[对该字段的说明]
+					</documentation>
+				</column>
+				<!--
+					属性说明：
+						1)id: 					[必须] 该Column的Id，该Id对应数据库中具体字段的Id;
+						2)name:					[必须] 该Column的名称;
+						3)comment:				[可选] 该Column的备注;
+						4)dataType:				[可选] 该Column值的类型，可选的值有string/int/long/double/date/time/datetime/text，默认值为string;
+						5)length:				[可选] 该Column数据的长度，默认为255；
+						6)precision:			[可选] 当Column数据类型为double时，该属性表示小数的位数，默认值为2；
+						7)notNull:				[可选] 可否为空，可选的值有true/false，默认值为false;
+						8)defaultValue:			[可选] 该Column的缺省值，是一个表达式，如#{curUserInfo.name};
+						9)isPrimaryKey:			[可选] 该Column是否是一个主键，可选的值有true/false，默认值为false;
+						10)isForeignKey:		[可选] 该Column是否是一个外键，可选的值有true/false，默认值为false;
+						11)titleColumn:			[可选] 该Column是否是标题，主要在页签中显示使用，可选的值有true/false，默认值为false;
+						12)workEntityMapping:	[可选] 只有需要将数据推送到统一事务时才需要定义该属性，该属性表示该事务相应的信息，可选的值subject/author/authorId/fileDate/workId/description；
+						13)viewColumn:			[可选] 是否是显示在视图中，可选的值有true/false，默认值为false。只有当Table中generateView属性为true时，该属性才有意义；
+						14)columnWidth:			[可选] 一个数字，表示视图中列的宽度。只有当Table中generateView属性为true时，该属性才有意义；
+						15)formField:			[可选] 是否是显示在表单中，可选的值有true/false，默认值为false。只有当Table中generateForm属性为true时，该属性才有意义；
+						16)height:				[可选] 一个数字，表示表单中字段的高度。只有当Table中generateForm属性为true时，该属性才有意义；
+						17)size:				[可选] 一个大于1的数字，表示表单中Select的size。只有当Table中generateForm属性为true，并且该字段是一个下拉框时，该属性才有意义；
+						18)multiple:			[可选] 可选的值有true/false，默认值为false，表示表单中Select可否复选。只有当Table中generateForm属性为true，并且该字段是一个下拉框时，该属性才有意义；
+						19)searchable:			[可选] 可选的值有true/false，默认值为false，表示是否是视图中高级查询的字段。
+						
+					范例：
+						<column id="AUTHOR" name="作者" defaultValue="#{curUserInfo.name}"/>						
+				-->			
+			</columns>	
+			
+			<!-- 索引定义区 -->
+			<indexs>
+				<index id="indexId" name="indexName" comment="[indexComment]">
+					<column ref="{column.id}" sort="[asc/desc]"/>
+				</index>
+				<!--
+					属性说明：
+						1)id: 					[必须] 该Index的Id，该Id对应数据库中具体索引的Id;
+						2)name:					[必须] 该Index的名称;
+						3)comment:				[可选] 该Index的备注;
+						4)column:				[必须] 该Index所索引的字段列表，可多个，至少一个;
+							A)ref:				[必须] 该索引字段相应的Column的Id；
+							B)sort:				[可选] 可选的值有asc/desc，默认值为asc。
+												
+					范例：
+						<index id="IDX_UD_CAR_UNIT" name="IDX_UD_CAR_UNIT" comment="车辆所属单位的索引">
+							<column ref="UNIT_ID" sort="asc"/>
+						</index>
+				-->
+			</indexs>	
+			
+			<references>
+				<reference constraintName="FK_UD_FK1" foreignColumnRef="column.id" referenceTableRef="table.id"/>
+			</references>
+			
+			<!-- 数据库定义语句区，该区可以定义也可以不定义，定义后系统在创建数据库表等结构时以该区语句为准 -->
+			<ddl>
+				<sql targetDb="oracle/mssql/mysql/...">
+					<![CDATA[
+						// ... ...
+					]]>
+				</sql>
+			</ddl>
+			
+			<documentation>
+				对表的说明
+			</documentation>
+		</table>
+	</dataModel>
+	
+	<!-- 数据集定义区(暂未使用) -->
+	<datasets>
+		<dataset id="datasetId" name="dataset name" tableRef="[table.id]">
+			<args>
+				<arg id="argId1" paramId="[paramId]" defaultValue="" dataType="[string/int/long/double/date/time/datetime/text]"/>
+				<arg id="argId2" paramId="[paramId]" defaultValue="" dataType="[string/int/long/double/date/time/datetime/text]"/>
+			</args>
+			<sql>
+				<![CDATA[
+					select  from oz_ud_fm_ysxx t where sjmc=#{sjmc}
+					... ...
+				]]>
+			</sql>
+			<scalars>
+				<scalar columnAlias="alias name" dataType="[string/int/long/double/date/time/datetime/text]">
+				<scalar columnAlias="alias name" dataType="[string/int/long/double/date/time/datetime/text]">
+			</scalars>
+			<documentation>
+				数据集描述
+			</documentation>
+		</dataset>
+	</datasets>	
+</definitions>

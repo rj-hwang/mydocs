@@ -1,0 +1,704 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema 
+	xmlns="http://www.gem-soft.com/schema/app-dm" 
+	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.gem-soft.com/schema/app-dm" 
+	elementFormDefault="qualified" 
+	attributeFormDefault="unqualified">
+
+	<xsd:annotation>
+		<xsd:documentation><![CDATA[
+			OZ AP's(Agile Application) application definition schema, version 5.2
+			Authors: CD826
+			
+			Defines the elements used in the OZ AP's data model.
+		]]></xsd:documentation>
+	</xsd:annotation>
+
+	<!-- OzAP/DM顶级标签: <definitions> -->
+	<xsd:element name="definitions">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ应用平台中数据定义的根元素，在该元素内可以定义一个或多个数据定义或数据集定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:complexType>
+			<xsd:sequence>
+				<xsd:element ref="documentation" minOccurs="0"></xsd:element>
+				<xsd:choice minOccurs="0" maxOccurs="unbounded">
+					<xsd:element name="dataModel" type="dataModelType"/>
+					<xsd:element name="datasets" type="datasetsType"/>
+				</xsd:choice>
+			</xsd:sequence>
+		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:element name="documentation">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[ 
+				Contains informative text describing the purpose of the enclosing element.
+				Used primarily for user documentation of XML bean definition documents.
+  			]]></xsd:documentation>
+  		</xsd:annotation>
+		<xsd:complexType mixed="true">
+  			<xsd:choice minOccurs="0" maxOccurs="unbounded" /> 
+  		</xsd:complexType>
+	</xsd:element>
+	
+	<xsd:complexType name="dataModelType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用配置平台中数据定义
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">					
+				<xsd:element name="table" type="tableType"/>
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="tableType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用配置平台中数据定义表的声明.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="documentation" minOccurs="0"></xsd:element>
+			<xsd:choice minOccurs="1" maxOccurs="unbounded">					
+				<xsd:element name="columns" type="columnsType"/>
+				<xsd:element name="references" type="referencesType"/>
+				<xsd:element name="indexs" type="indexsType"/>
+				<xsd:element name="ddl" type="ddlType"/>
+			</xsd:choice>
+		</xsd:sequence>
+		<xsd:attribute name="id" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. 声明该Table的id，该id在整个项目中必须是唯一;
+					2. 该id的值应该与数据库中具体表的id相一致;
+					3. id命名规范为：OZ_UD_[项目名称缩写]_[模块名称缩写]_[表的名称]，其中UD为用户自定义(UserDefinition)的缩写.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="name" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选]该Table的名称
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="type" use="optional" default="master">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选]该Table的类型，主表(master)/子表(child)/关联表(references);
+					2. 缺省类型为主表(master).
+				]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="master"/>
+					<xsd:enumeration value="child"/>
+					<xsd:enumeration value="references"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="docType" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选]该属性值必须在全系统内唯一，其用来区分一个数据所属的类型，以方便统一事务等处理，如：OA_车辆管理_车辆信息;
+					2. 如果没有声明那么系统默认使用id的值作为该属性的值.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="classified" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选] 该属性只有需要将数据推送到统一事务时才需要定义;
+					2. 该属性表示该事务在统一事务中的分类信息;
+					3. 无默认值.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="fileType" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选] 该属性只有需要将数据推送到统一事务时才需要定义;
+					2. 该属性表示该事务在统一事务中的文件类别;
+					3. 无默认值.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="generateView" type="xsd:boolean" use="optional" default="false">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选] 是否按照当前Table的定义为所属应用生成一个缺省的视图定义;
+					2. 缺省值为false;
+					3. 所生成视图id为：table.id+"_View";视图名称为：table.name+"缺省视图";视图类型为：normal.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="defaultSortField" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选] 该属性只有在generateView声明为true时才有用;
+					2. 该属性表示所生成视图排序列的id.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="defaultSortDir" use="optional" default="asc">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选] 该属性只有在generateView声明为true时才有用;
+					2. 该属性表示所生成视图排序列的排序方式;
+					3. 默认值为asc.
+				]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="asc"/>
+					<xsd:enumeration value="desc"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="generateForm" type="xsd:boolean" use="optional" default="false">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选] 是否按照当前Table的定义为所属应用生成一个缺省的表单定义;
+					2. 缺省值为false;
+					3. 所生成表单id为：table.id+"_Form";表单名称为：table.name+"缺省表单";表单类型为：form.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>	
+	<xsd:complexType name="columnsType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用配置平台中数据表中的列声明区段定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:choice minOccurs="1" maxOccurs="unbounded">					
+				<xsd:element name="column" type="columnType"/>
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>
+	
+	<xsd:complexType name="columnType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用配置平台中数据表中的具体列声明.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="documentation" minOccurs="0"></xsd:element>
+		</xsd:sequence>
+		
+		<xsd:attribute name="id" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					数据库Column的id，id的值必须和数据库表中相应字段的id一致.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="name" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					数据库Column的名称.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="comment" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					数据库Column的备注，如果没有定义，那么默认与name的值一致.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="dataType" use="optional" default="string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选] 标识当前字段值的类型;
+					2. 缺省值为string,但如果该Column是primaryKey则该属性的值为long,不可以更改.
+				]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="string"/>
+					<xsd:enumeration value="int"/>
+					<xsd:enumeration value="long"/>
+					<xsd:enumeration value="currency"/>
+					<xsd:enumeration value="double"/>
+					<xsd:enumeration value="date"/>
+					<xsd:enumeration value="time"/>
+					<xsd:enumeration value="datetime"/>
+					<xsd:enumeration value="text"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+		<xsd:attribute name="length" type="xsd:int" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 数据库Column的长度，默认为255.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="precision" type="xsd:int" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 当Column数据类型为double时，该属性表示小数的位数，默认值为2.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="notNull" type="xsd:boolean" use="optional" default="true">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选] 可否为空，可选的值有true/false，默认值为true(即可以为空).
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="defaultValue" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选] 该字段缺省的值;
+					2. 缺省值支持表达式，但必须使用#{}包含相应的表达式，如：#{curUserInfo.name};
+					3. 表达式有以下内置的对象可以供求值：
+					   1)sysdate: 系统当前日期, 格式为：yyyy-MM-dd;
+					   2)sysdatetime: 系统当前时间, 格式为：yyyy-MM-dd HH:mm:ss;
+					   3)curUser: 系统当前用户信息, 可以通过.的方式获取相应属性值, 如#{curUser.name};
+					   4)curUserInfo: 系统当前人员信息, 可以通过.的方式获取相应属性值, 如#{curUserInfo.name};
+					   5)parentDocType: 当前所创建对象所属父亲的文档类型;
+					   6)master: 当前所创建对象所属父亲的数据, 可以通过.的方式获取相应属性值, 如#{master.id}.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="isPrimaryKey" type="xsd:boolean" use="optional" default="false">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 该Column是否是主键，默认值为false.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="isForeignKey" type="xsd:boolean" use="optional" default="false">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 该Column是否是外键，默认值为false.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="titleColumn" type="xsd:boolean" use="optional" default="false">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 该Column是否是标题列，默认值为false.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="viewColumn" type="xsd:boolean" use="optional" default="false">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选] 是否在默认所生成的视图中显示, 默认值为false; 
+					2. 只有当Table中generateView属性为true时，该属性才有意义.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="columnWidth" type="xsd:int" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选] 默认所生成的视图中该列宽度, 默认值为80; 
+					2. 只有当Table中generateView属性为true时并且viewColumn值也为true时，该属性才有意义.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="formField" type="xsd:boolean" use="optional" default="false">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选] 是否在默认所生成的表单中显示, 默认值为false; 
+					2. 只有当Table中generateForm属性为true时，该属性才有意义.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="height" type="xsd:int" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选] 默认所生成的表单中该字段高度, 无默认值; 
+					2. 只有当Table中generateForm属性为true时并且formField值也为true时，该属性才有意义.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="size" type="xsd:int" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选] 默认所生成的表单中该字段相应下拉框的size, 默认值为1; 
+					2. 只有当Table中generateForm属性为true时并且formField值也为true时，并且该字段是一个下拉框类型的字段，该属性才有意义.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="multiple" type="xsd:boolean" use="optional" default="false">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选] 默认所生成的表单中该字段相应下拉框是否可以多选, 默认值为false; 
+					2. 只有当Table中generateForm属性为true时并且formField值也为true时，并且该字段是一个下拉框类型的字段，该属性才有意义.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="searchable" type="xsd:boolean" use="optional" default="false">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选] 当视图中的检索进行数据库全文检索时，是否可以对该字段进行检索，默认值为false; 
+					2. 如果字段的类型不是string或者text，那么该属性无效.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="workEntityMapping" use="optional" default="subject">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					1. [可选] 当本数据需要推送到统一事务中进行显示时，该属性可以将相应的值映射到统一事务中显示，如果不需要推送到统一事务则不需要配置该属性;
+					2. 缺省值为subject,可选的值有subject(标题)/author(作者)/authorId(作者ID)/fileDate(文件日期)/workId(事务ID)/description(事务描述).
+				]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="subject"/>
+					<xsd:enumeration value="author"/>
+					<xsd:enumeration value="authorId"/>
+					<xsd:enumeration value="fileDate"/>
+					<xsd:enumeration value="workId"/>
+					<xsd:enumeration value="description"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<xsd:complexType name="referencesType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用配置平台中数据表中外键引用定义区域.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:choice minOccurs="1" maxOccurs="unbounded">					
+				<xsd:element name="reference" type="referenceType"/>
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>	
+	<xsd:complexType name="referenceType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用配置平台中数据表中的外键引用定义声明.注意该引用可能是一个虚拟的引用，可能在实际数据库定义中不存在。
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="documentation" minOccurs="0"></xsd:element>
+		</xsd:sequence>		
+		<xsd:attribute name="constraintName" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					该外键引用的名称.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="foreignColumnRef" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					相应外键的字段id.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="referenceTableRef" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					相应主表的id.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<xsd:complexType name="indexsType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用配置平台中数据表中索引定义区域.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:choice minOccurs="1" maxOccurs="unbounded">					
+				<xsd:element name="index" type="indexType"/>
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>	
+	<xsd:complexType name="indexType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用配置平台中数据表中的索引定义声明.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="documentation" minOccurs="0"></xsd:element>
+			<xsd:choice minOccurs="1" maxOccurs="unbounded">					
+				<xsd:element name="column" type="indexColumnType"/>
+			</xsd:choice>
+		</xsd:sequence>
+		<xsd:attribute name="id" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					该索引的id，与数据库中具体索引的id一致.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="name" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 索引的名称.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="comment" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 索引的备注.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	<xsd:complexType name="indexColumnType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用配置平台中数据表中索引列定义声明.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:attribute name="ref" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					相应索引字段的id.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="sort" use="optional" default="asc">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 索引的排序方式.
+				]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="ase"/>
+					<xsd:enumeration value="desc"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<xsd:complexType name="ddlType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用配置平台中数据表创建定义区域(暂未完成此项的开发).
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:choice minOccurs="1" maxOccurs="unbounded">					
+				<xsd:element name="sql" type="sqlType"/>
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>	
+	<xsd:complexType name="sqlType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用配置平台中SQL语句定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="documentation" minOccurs="0"></xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="targetDb" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					SQL的目标数据库类型.
+				]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="oracle"/>
+					<xsd:enumeration value="mssql"/>
+					<xsd:enumeration value="mysql"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	
+	<xsd:complexType name="datasetsType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用配置平台中数据集定义区域.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">					
+				<xsd:element name="dataset" type="datasetType"/>
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>
+	<xsd:complexType name="datasetType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用配置平台中SQL语句定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="documentation" minOccurs="0"></xsd:element>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">					
+				<xsd:element name="args" type="argsType"/>
+				<xsd:element name="sql" type="sqlType"/>
+				<xsd:element name="scalars" type="scalarsType"/>
+			</xsd:choice>
+		</xsd:sequence>
+		<xsd:attribute name="id" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					该数据集的id，在整个项目中必须是唯一的.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="name" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					该数据集的名称.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="tableRef" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					该数据集的默认所属表.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<xsd:complexType name="argsType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用配置平台中数据集参数定义区域.
+				注意参数的声明必须和SQL中参数的顺序一致，否则会导致不可预知的错误.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">					
+				<xsd:element name="arg" type="argType"/>
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>	
+	<xsd:complexType name="argType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用配置平台中数据集参数定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="documentation" minOccurs="0"></xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="id" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					该参数的id，与相应字段的id值一致.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="paramId" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选]该参数值在request中的id.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="defaultValue" type="xsd:string" use="optional">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选]该参数值的缺省值.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="dataType" use="optional" default="string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 该参数值的类型.
+				]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="string"/>
+					<xsd:enumeration value="int"/>
+					<xsd:enumeration value="long"/>
+					<xsd:enumeration value="currency"/>
+					<xsd:enumeration value="double"/>
+					<xsd:enumeration value="date"/>
+					<xsd:enumeration value="time"/>
+					<xsd:enumeration value="datetime"/>
+					<xsd:enumeration value="text"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+	
+	<xsd:complexType name="sqlType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[ 
+				该数据集所使用的SQL语句.
+  			]]></xsd:documentation>
+  		</xsd:annotation>
+		<xsd:complexType mixed="true">
+  			<xsd:choice minOccurs="1" maxOccurs="1" /> 
+  		</xsd:complexType>
+	</xsd:complexType>
+	
+	<xsd:complexType name="scalarsType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用配置平台中数据集标量定义区域.
+				注意标量的声明必须和返回值中的顺序一致，否则会导致不可预知的错误.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:choice minOccurs="0" maxOccurs="unbounded">					
+				<xsd:element name="scalar" type="scalarType"/>
+			</xsd:choice>
+		</xsd:sequence>
+	</xsd:complexType>	
+	<xsd:complexType name="scalarType">
+		<xsd:annotation>
+			<xsd:documentation><![CDATA[
+				OZ AP 应用配置平台中数据集标量定义.
+			]]></xsd:documentation>
+		</xsd:annotation>
+		<xsd:sequence>
+			<xsd:element ref="documentation" minOccurs="0"></xsd:element>
+		</xsd:sequence>
+		<xsd:attribute name="columnAlias" type="xsd:string" use="required">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					SQL语句中标量的别名.
+				]]></xsd:documentation>
+			</xsd:annotation>
+		</xsd:attribute>
+		<xsd:attribute name="dataType" use="optional" default="string">
+			<xsd:annotation>
+				<xsd:documentation><![CDATA[
+					[可选] 该标量值的类型.
+				]]></xsd:documentation>
+			</xsd:annotation>
+			<xsd:simpleType>
+				<xsd:restriction base="xsd:NMTOKEN">
+					<xsd:enumeration value="string"/>
+					<xsd:enumeration value="int"/>
+					<xsd:enumeration value="long"/>
+					<xsd:enumeration value="currency"/>
+					<xsd:enumeration value="double"/>
+					<xsd:enumeration value="date"/>
+					<xsd:enumeration value="time"/>
+					<xsd:enumeration value="datetime"/>
+					<xsd:enumeration value="text"/>
+				</xsd:restriction>
+			</xsd:simpleType>
+		</xsd:attribute>
+	</xsd:complexType>
+</xsd:schema>  
